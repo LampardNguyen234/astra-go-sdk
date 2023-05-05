@@ -11,6 +11,7 @@ import (
 
 type PrivateKey struct {
 	types.PrivKey
+	privKeyString string
 }
 
 func NewPrivateKeyFromString(privateKeyStr string) (*PrivateKey, error) {
@@ -24,7 +25,7 @@ func NewPrivateKeyFromString(privateKeyStr string) (*PrivateKey, error) {
 
 	privateKey := ethermintHd.EthSecp256k1.Generate()(privateKeyBytes)
 
-	return &PrivateKey{privateKey}, nil
+	return &PrivateKey{PrivKey: privateKey, privKeyString: privateKeyStr}, nil
 }
 
 func (k *PrivateKey) AccAddress() sdk.AccAddress {
@@ -37,4 +38,8 @@ func (k *PrivateKey) PubKey() types.PubKey {
 
 func (k *PrivateKey) HexAddress() common.Address {
 	return common.BytesToAddress(k.AccAddress().Bytes())
+}
+
+func (k *PrivateKey) String() string {
+	return k.privKeyString
 }
