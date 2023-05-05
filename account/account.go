@@ -30,6 +30,6 @@ func NewKeyInfoFromPrivateKey(privateKeyStr string) (*KeyInfo, error) {
 	return &KeyInfo{
 		PrivateKey:    privateKeyStr,
 		CosmosAddress: privateKey.AccAddress().String(),
-		EthAddress:    privateKey.HexAddress(),
+		EthAddress:    privateKey.HexAddress().String(),
 	}, nil
 }

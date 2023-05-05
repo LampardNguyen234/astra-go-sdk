@@ -35,6 +35,6 @@ func (k *PrivateKey) PubKey() types.PubKey {
 	return k.PrivKey.PubKey()
 }
 
-func (k *PrivateKey) HexAddress() string {
-	return common.BytesToAddress(k.AccAddress().Bytes()).String()
+func (k *PrivateKey) HexAddress() common.Address {
+	return common.BytesToAddress(k.AccAddress().Bytes())
 }
