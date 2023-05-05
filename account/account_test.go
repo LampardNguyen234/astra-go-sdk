@@ -1,12 +1,14 @@
 package account
 
 import (
+	"encoding/hex"
 	"github.com/stretchr/testify/assert"
+	"github.com/tendermint/tendermint/libs/rand"
 	"testing"
 )
 
 func TestNewKeyInfoFromPrivateKey(t *testing.T) {
-	//emptyAccount := KeyInfo{}
+	emptyAccount := KeyInfo{}
 
 	testCases := []struct {
 		name           string
@@ -14,30 +16,30 @@ func TestNewKeyInfoFromPrivateKey(t *testing.T) {
 		expectedErr    error
 		expectedResult KeyInfo
 	}{
-		//{
-		//	"empty private key",
-		//	"",
-		//	ErrInvalidPrivateKey,
-		//	emptyAccount,
-		//},
-		//{
-		//	"not a hex-string private key",
-		//	"this is a non-hex string",
-		//	ErrInvalidPrivateKey,
-		//	emptyAccount,
-		//},
-		//{
-		//	"private key with less than 32 bytes",
-		//	hex.EncodeToString(rand.Bytes(31)),
-		//	ErrInvalidPrivateKey,
-		//	emptyAccount,
-		//},
-		//{
-		//	"private key with more than 32 bytes",
-		//	hex.EncodeToString(rand.Bytes(33)),
-		//	ErrInvalidPrivateKey,
-		//	emptyAccount,
-		//},
+		{
+			"empty private key",
+			"",
+			ErrInvalidPrivateKey,
+			emptyAccount,
+		},
+		{
+			"not a hex-string private key",
+			"this is a non-hex string",
+			ErrInvalidPrivateKey,
+			emptyAccount,
+		},
+		{
+			"private key with less than 32 bytes",
+			hex.EncodeToString(rand.Bytes(31)),
+			ErrInvalidPrivateKey,
+			emptyAccount,
+		},
+		{
+			"private key with more than 32 bytes",
+			hex.EncodeToString(rand.Bytes(33)),
+			ErrInvalidPrivateKey,
+			emptyAccount,
+		},
 		{
 			"valid private key - 00",
 			"c32b5551dd1acd26a17b53c1a67840961e6948f7ffd92fe6c38a5e5fd64a3893",

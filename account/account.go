@@ -1,11 +1,7 @@
 package account
 
 import (
-	"encoding/hex"
 	_ "github.com/LampardNguyen234/astra-go-sdk/common"
-	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
-	ethermintHd "github.com/evmos/ethermint/crypto/hd"
 )
 
 const (
@@ -26,22 +22,14 @@ type KeyInfo struct {
 
 // NewKeyInfoFromPrivateKey recovers the KeyInfo from the given private key.
 func NewKeyInfoFromPrivateKey(privateKeyStr string) (*KeyInfo, error) {
-	privateKeyBytes, err := hex.DecodeString(privateKeyStr)
+	privateKey, err := NewPrivateKeyFromString(privateKeyStr)
 	if err != nil {
-		return nil, errors.Wrapf(ErrInvalidPrivateKey, "not a hex string")
+		return nil, err
 	}
-	if len(privateKeyBytes) != privateKeySize {
-		return nil, errors.Wrapf(ErrInvalidPrivateKey, "expected key size %v, got %v", privateKeySize, len(privateKeyBytes))
-	}
-
-	privateKey := ethermintHd.EthSecp256k1.Generate()(privateKeyBytes)
-
-	publicKey := privateKey.PubKey()
-	cosmosAddr := types.AccAddress(publicKey.Address())
 
 	return &KeyInfo{
 		PrivateKey:    privateKeyStr,
-		CosmosAddress: cosmosAddr.String(),
-		EthAddress:    MustCosmosAddressToHexAddress(cosmosAddr.String()),
+		CosmosAddress: privateKey.AccAddress().String(),
+		EthAddress:    privateKey.HexAddress(),
 	}, nil
 }
