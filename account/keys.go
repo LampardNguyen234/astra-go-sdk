@@ -28,18 +28,18 @@ func NewPrivateKeyFromString(privateKeyStr string) (*PrivateKey, error) {
 	return &PrivateKey{PrivKey: privateKey, privKeyString: privateKeyStr}, nil
 }
 
-func (k *PrivateKey) AccAddress() sdk.AccAddress {
+func (k PrivateKey) AccAddress() sdk.AccAddress {
 	return sdk.AccAddress(k.PubKey().Address())
 }
 
-func (k *PrivateKey) PubKey() types.PubKey {
+func (k PrivateKey) PubKey() types.PubKey {
 	return k.PrivKey.PubKey()
 }
 
-func (k *PrivateKey) HexAddress() common.Address {
+func (k PrivateKey) HexAddress() common.Address {
 	return common.BytesToAddress(k.AccAddress().Bytes())
 }
 
-func (k *PrivateKey) String() string {
+func (k PrivateKey) String() string {
 	return k.privKeyString
 }
