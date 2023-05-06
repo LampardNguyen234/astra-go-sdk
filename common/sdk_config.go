@@ -6,7 +6,23 @@ import (
 	ethermintTypes "github.com/evmos/ethermint/types"
 )
 
+var initialized = false
+
 func init() {
+	initConfig()
+	return
+}
+
+func Init() {
+	initConfig()
+}
+
+// initConfig should only be called once.
+func initConfig() {
+	if initialized {
+		return
+	}
+
 	sdkConfig := sdk.GetConfig()
 	sdkConfig.SetPurpose(44)
 	sdkConfig.SetCoinType(ethermintTypes.Bip44CoinType)
@@ -22,5 +38,5 @@ func init() {
 	sdkConfig.SetBech32PrefixForValidator(bech32PrefixValAddr, bech32PrefixValPub)
 	sdkConfig.SetBech32PrefixForConsensusNode(bech32PrefixConsAddr, bech32PrefixConsPub)
 
-	return
+	initialized = true
 }
