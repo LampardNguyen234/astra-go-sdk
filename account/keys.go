@@ -2,6 +2,7 @@ package account
 
 import (
 	"encoding/hex"
+	_ "github.com/LampardNguyen234/astra-go-sdk/common"
 	"github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
