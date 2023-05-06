@@ -19,10 +19,6 @@ func Init() {
 
 // initConfig should only be called once.
 func initConfig() {
-	if initialized {
-		return
-	}
-
 	sdkConfig := sdk.GetConfig()
 	sdkConfig.SetPurpose(44)
 	sdkConfig.SetCoinType(ethermintTypes.Bip44CoinType)
@@ -37,6 +33,4 @@ func initConfig() {
 	sdkConfig.SetBech32PrefixForAccount(bech32PrefixAccAddr, bech32PrefixAccPub)
 	sdkConfig.SetBech32PrefixForValidator(bech32PrefixValAddr, bech32PrefixValPub)
 	sdkConfig.SetBech32PrefixForConsensusNode(bech32PrefixConsAddr, bech32PrefixConsPub)
-
-	initialized = true
 }
