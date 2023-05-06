@@ -64,3 +64,24 @@ func MustHexToCosmosAddress(hexAddr string) string {
 
 	return cosmosAddr
 }
+
+// ParseCosmosAddress converts the given address (either in hex format or bech32 format) to a valid sdk.AccAddress.
+func ParseCosmosAddress(strAddr string) (sdk.AccAddress, error) {
+	cosmosAddr, err := HexToCosmosAddress(strAddr)
+	if err == nil {
+		return NewCosmosAddressFromStr(cosmosAddr)
+	}
+
+	return NewCosmosAddressFromStr(strAddr)
+}
+
+// MustParseCosmosAddress converts the given address (either in hex format or bech32 format) to a valid sdk.AccAddress.
+// It will panic if any error occurs.
+func MustParseCosmosAddress(strAddr string) sdk.AccAddress {
+	ret, err := ParseCosmosAddress(strAddr)
+	if err != nil {
+		panic(err)
+	}
+
+	return ret
+}
