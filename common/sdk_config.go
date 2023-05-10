@@ -6,8 +6,6 @@ import (
 	ethermintTypes "github.com/evmos/ethermint/types"
 )
 
-var initialized = false
-
 func init() {
 	initConfig()
 	return
