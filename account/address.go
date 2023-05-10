@@ -85,3 +85,24 @@ func MustParseCosmosAddress(strAddr string) sdk.AccAddress {
 
 	return ret
 }
+
+// ParseCosmosValidatorAddress converts the given address to a valid sdk.ValAddress.
+func ParseCosmosValidatorAddress(strAddr string) (sdk.ValAddress, error) {
+	addr, err := sdk.ValAddressFromHex(strAddr)
+	if err == nil {
+		return addr, nil
+	}
+
+	return sdk.ValAddressFromBech32(strAddr)
+}
+
+// MustParseCosmosValidatorAddress converts the given address to a valid sdk.ValAddress.
+// It will panic if any error occurs.
+func MustParseCosmosValidatorAddress(strAddr string) sdk.ValAddress {
+	ret, err := ParseCosmosValidatorAddress(strAddr)
+	if err != nil {
+		panic(err)
+	}
+
+	return ret
+}
