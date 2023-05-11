@@ -12,9 +12,9 @@ func TestCosmosClient_TxSend(t *testing.T) {
 		PrivateKey: privateKey,
 	}
 
-	p := &msg_params.TxSendRequestParams{
+	p := msg_params.TxSendRequestParams{
 		TxParams: *txParams,
-		ToAddr:   "astra1rlpfcs404zdrxhztwyh5jwuntelwypxk4w33jq",
+		ToAddr:   toAddr,
 		Amount:   new(big.Int).SetUint64(testAmt),
 	}
 

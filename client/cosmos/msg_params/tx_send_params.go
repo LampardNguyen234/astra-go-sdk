@@ -12,6 +12,12 @@ import (
 type TxSendRequestParams struct {
 	TxParams
 
+	// FromAddr is the address of the sender (either in hex format or cosmos format).
+	// If empty, it will be retrieved from the private key.
+	//
+	// If FromAddr != Operator => GrantExecMsg.
+	FromAddr string
+
 	// ToAddr is the address of the recipient (either in hex format or cosmos format).
 	ToAddr string
 
@@ -26,11 +32,24 @@ func (p TxSendRequestParams) IsValid() (bool, error) {
 	if p.Amount == nil {
 		return false, fmt.Errorf("empty Amount")
 	}
+	if p.FromAddr != "" {
+		if _, err := account.ParseCosmosAddress(p.FromAddr); err != nil {
+			return false, errors.Wrapf(err, "invalid FromAddr")
+		}
+	}
 	if _, err := account.ParseCosmosAddress(p.ToAddr); err != nil {
 		return false, errors.Wrapf(err, "invalid ToAddr")
 	}
 
 	return true, nil
+}
+
+func (p TxSendRequestParams) From() sdk.AccAddress {
+	if p.FromAddr != "" {
+		return account.MustParseCosmosAddress(p.FromAddr)
+	}
+
+	return p.Operator()
 }
 
 func (p TxSendRequestParams) To() sdk.AccAddress {

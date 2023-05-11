@@ -2,16 +2,20 @@ package cosmos
 
 import (
 	"github.com/LampardNguyen234/astra-go-sdk/account"
+	"github.com/LampardNguyen234/astra-go-sdk/client/cosmos/msg_params"
 	"github.com/LampardNguyen234/astra-go-sdk/common"
 	"os"
 )
 
 var (
-	c          *CosmosClient
-	privateKey = ""
-	addr       string
+	c                 *CosmosClient
+	privateKey        = ""
+	granteePrivateKey = ""
+	addr              string
+	toAddr            string
 
-	testAmt = uint64(1000000000000000000)
+	testAmt         = uint64(1000000000000000000)
+	defaultTxParams *msg_params.TxParams
 )
 
 func init() {
@@ -30,6 +34,20 @@ func init() {
 		panic(err)
 	}
 	addr = prvKey.AccAddress().String()
+
+	granteePrv, err := account.NewPrivateKeyFromString(granteePrivateKey)
+	if err != nil {
+		panic(err)
+	}
+	toAddr = granteePrv.AccAddress().String()
+
+	defaultTxParams, err = msg_params.NewTxParams(
+		privateKey,
+		0, "", 0,
+	)
+	if err != nil {
+		panic(err)
+	}
 
 	common.Init()
 }

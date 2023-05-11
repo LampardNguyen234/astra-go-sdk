@@ -54,6 +54,6 @@ func (p TxParams) IsValid() (bool, error) {
 	return true, nil
 }
 
-func (p TxParams) From() sdk.AccAddress {
+func (p TxParams) Operator() sdk.AccAddress {
 	return p.MustGetPrivateKey().AccAddress()
 }

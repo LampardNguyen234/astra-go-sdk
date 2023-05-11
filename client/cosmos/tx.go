@@ -9,11 +9,11 @@ import (
 )
 
 type Tx struct {
-	txf         tx.Factory
-	txConfig    client.TxConfig
-	chainID     string
-	params      msg_params.TxParams
-	senderCheck TxSenderAccountI
+	txf              tx.Factory
+	txConfig         client.TxConfig
+	chainID          string
+	params           msg_params.TxParams
+	accountRetriever AccountRetrieverI
 }
 
 // NewTx creates a new Tx from the given parameters.
@@ -40,11 +40,11 @@ func (c *CosmosClient) NewTx(txParams msg_params.TxParams) *Tx {
 		WithSignMode(c.BaseClient.TxConfig.SignModeHandler().DefaultMode())
 
 	return &Tx{
-		txf:         txf,
-		params:      txParams,
-		txConfig:    c.BaseClient.TxConfig,
-		chainID:     c.BaseClient.ChainID,
-		senderCheck: c,
+		txf:              txf,
+		params:           txParams,
+		txConfig:         c.BaseClient.TxConfig,
+		chainID:          c.BaseClient.ChainID,
+		accountRetriever: c,
 	}
 }
 

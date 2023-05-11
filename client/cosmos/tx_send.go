@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (c *CosmosClient) TxSend(p *msg_params.TxSendRequestParams) (*sdk.TxResponse, error) {
+func (c *CosmosClient) TxSend(p msg_params.TxSendRequestParams) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
 	}
@@ -25,6 +25,9 @@ func (c *CosmosClient) TxSend(p *msg_params.TxSendRequestParams) (*sdk.TxRespons
 	}
 
 	msg := bankTypes.NewMsgSend(from, to, p.SendAmount())
+	if from.String() != p.Operator().String() {
+		return c.txGrantExec(p.TxParams, msg)
+	}
 
 	return c.BuildAndSendTx(p.TxParams, msg)
 }

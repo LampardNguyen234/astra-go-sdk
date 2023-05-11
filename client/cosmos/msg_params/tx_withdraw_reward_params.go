@@ -10,7 +10,10 @@ type TxWithdrawRewardParams struct {
 	TxParams
 
 	// DelAddress is the address of the delegator.
+	//
 	// If empty, it will be retrieved from the private key.
+	//
+	// If DelAddress != Operator => GrantExecMsg.
 	DelAddress string
 
 	// ValAddress is the address of the validator to whom the DelAddress delegates tokens.
@@ -35,7 +38,7 @@ func (p TxWithdrawRewardParams) IsValid() (bool, error) {
 
 func (p TxWithdrawRewardParams) DelegatorAddress() sdk.AccAddress {
 	if p.DelAddress == "" {
-		return p.TxParams.From()
+		return p.TxParams.Operator()
 	}
 
 	return account.MustParseCosmosAddress(p.DelAddress)

@@ -17,8 +17,9 @@ type AccountInfoI interface {
 	String() string
 }
 
-// TxSenderAccountI specifies required methods for checking the sender account.
-type TxSenderAccountI interface {
+// AccountRetrieverI specifies required methods for checking the sender account.
+type AccountRetrieverI interface {
 	AccountExists(address string) error
 	AccountInfo(addr string) (AccountInfoI, error)
+	TotalAccounts() (uint64, error)
 }

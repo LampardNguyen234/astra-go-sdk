@@ -3,6 +3,7 @@ package cosmos
 import (
 	"fmt"
 	"github.com/LampardNguyen234/astra-go-sdk/account"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/gogo/protobuf/grpc"
 )
@@ -51,4 +52,19 @@ func (c *CosmosClient) AccountExists(addr string) error {
 	}
 
 	return nil
+}
+
+// TotalAccounts returns the number of accounts on the blockchain.
+func (c *CosmosClient) TotalAccounts() (uint64, error) {
+	resp, err := c.AuthClient.Accounts(c.ctx, &authTypes.QueryAccountsRequest{
+		Pagination: &query.PageRequest{
+			Limit:      1,
+			CountTotal: true,
+		},
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	return resp.Pagination.Total, nil
 }

@@ -97,7 +97,7 @@ func (t *Tx) PrintUnsignedTx(msg sdk.Msg) (string, error) {
 func (t *Tx) prepareSignTx() error {
 	from := t.params.MustGetPrivateKey().AccAddress()
 
-	if err := t.senderCheck.AccountExists(from.String()); err != nil {
+	if err := t.accountRetriever.AccountExists(from.String()); err != nil {
 		return errors.Wrap(ErrAccountNotExisted, err.Error())
 	}
 
@@ -106,7 +106,7 @@ func (t *Tx) prepareSignTx() error {
 		var accNum, accSeq uint64
 		var err error
 
-		cosmosAccount, err := t.senderCheck.AccountInfo(from.String())
+		cosmosAccount, err := t.accountRetriever.AccountInfo(from.String())
 		if err != nil {
 			return errors.Wrap(err, "CosmosAccount")
 		}
