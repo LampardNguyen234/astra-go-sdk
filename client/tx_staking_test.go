@@ -1,15 +1,15 @@
-package cosmos
+package client
 
 import (
 	"fmt"
-	"github.com/LampardNguyen234/astra-go-sdk/client/cosmos/msg_params"
+	msg_params2 "github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
 	"math/big"
 	"testing"
 	"time"
 )
 
 func TestCosmosClient_TxDelegate(t *testing.T) {
-	p := msg_params.TxDelegateParams{
+	p := msg_params2.TxDelegateParams{
 		TxParams:   *defaultTxParams,
 		ValAddress: valAddr,
 		Amount:     new(big.Int).SetUint64(testAmt),
@@ -24,7 +24,7 @@ func TestCosmosClient_TxDelegate(t *testing.T) {
 }
 
 func TestCosmosClient_AutoCompound(t *testing.T) {
-	p := msg_params.TxWithdrawRewardParams{
+	p := msg_params2.TxWithdrawRewardParams{
 		TxParams:   *defaultTxParams,
 		ValAddress: valAddr,
 	}

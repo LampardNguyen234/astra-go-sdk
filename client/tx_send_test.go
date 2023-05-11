@@ -1,18 +1,18 @@
-package cosmos
+package client
 
 import (
 	"fmt"
-	"github.com/LampardNguyen234/astra-go-sdk/client/cosmos/msg_params"
+	msg_params2 "github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
 	"math/big"
 	"testing"
 )
 
 func TestCosmosClient_TxSend(t *testing.T) {
-	txParams := &msg_params.TxParams{
+	txParams := &msg_params2.TxParams{
 		PrivateKey: privateKey,
 	}
 
-	p := msg_params.TxSendRequestParams{
+	p := msg_params2.TxSendRequestParams{
 		TxParams: *txParams,
 		ToAddr:   toAddr,
 		Amount:   new(big.Int).SetUint64(testAmt),

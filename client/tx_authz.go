@@ -1,13 +1,13 @@
-package cosmos
+package client
 
 import (
 	"fmt"
-	"github.com/LampardNguyen234/astra-go-sdk/client/cosmos/msg_params"
+	msg_params2 "github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 )
 
-func (c *CosmosClient) txGrantAuthorization(p msg_params.TxGrantParams, auth authz.Authorization) (*sdk.TxResponse, error) {
+func (c *CosmosClient) txGrantAuthorization(p msg_params2.TxGrantParams, auth authz.Authorization) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (c *CosmosClient) txGrantAuthorization(p msg_params.TxGrantParams, auth aut
 	return c.BuildAndSendTx(p.TxParams, msg)
 }
 
-func (c *CosmosClient) txGrantExec(p msg_params.TxParams, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
+func (c *CosmosClient) txGrantExec(p msg_params2.TxParams, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
 	}

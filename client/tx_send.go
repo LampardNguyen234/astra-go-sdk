@@ -1,7 +1,7 @@
-package cosmos
+package client
 
 import (
-	"github.com/LampardNguyen234/astra-go-sdk/client/cosmos/msg_params"
+	"github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankTypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/pkg/errors"

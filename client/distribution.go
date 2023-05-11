@@ -1,4 +1,4 @@
-package cosmos
+package client
 
 import (
 	"github.com/LampardNguyen234/astra-go-sdk/account"

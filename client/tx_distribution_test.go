@@ -1,14 +1,14 @@
-package cosmos
+package client
 
 import (
 	"fmt"
-	"github.com/LampardNguyen234/astra-go-sdk/client/cosmos/msg_params"
+	msg_params2 "github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
 	"testing"
 	"time"
 )
 
 func TestCosmosClient_TxWithdrawReward(t *testing.T) {
-	txParams, err := msg_params.NewTxParams(
+	txParams, err := msg_params2.NewTxParams(
 		privateKey,
 		0, "", 0,
 	)
@@ -16,7 +16,7 @@ func TestCosmosClient_TxWithdrawReward(t *testing.T) {
 		panic(err)
 	}
 
-	p := msg_params.TxWithdrawRewardParams{
+	p := msg_params2.TxWithdrawRewardParams{
 		TxParams:   *txParams,
 		ValAddress: valAddr,
 	}
@@ -30,7 +30,7 @@ func TestCosmosClient_TxWithdrawReward(t *testing.T) {
 }
 
 func TestCosmosClient_TxGrantWithdrawReward(t *testing.T) {
-	p := msg_params.TxGrantParams{
+	p := msg_params2.TxGrantParams{
 		TxParams:    *defaultTxParams,
 		Grantee:     toAddr,
 		ExpiredTime: time.Now().Add(60 * time.Minute),
@@ -45,7 +45,7 @@ func TestCosmosClient_TxGrantWithdrawReward(t *testing.T) {
 
 	time.Sleep(20 * time.Second)
 
-	newTxParams, err := msg_params.NewTxParams(
+	newTxParams, err := msg_params2.NewTxParams(
 		granteePrivateKey,
 		0, "", 0,
 	)
@@ -53,7 +53,7 @@ func TestCosmosClient_TxGrantWithdrawReward(t *testing.T) {
 		panic(err)
 	}
 
-	newParams := msg_params.TxWithdrawRewardParams{
+	newParams := msg_params2.TxWithdrawRewardParams{
 		TxParams:   *newTxParams,
 		DelAddress: addr,
 		ValAddress: valAddr,

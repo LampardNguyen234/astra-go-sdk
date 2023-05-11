@@ -1,4 +1,4 @@
-package cosmos
+package client
 
 import (
 	clientTx "github.com/cosmos/cosmos-sdk/client/tx"
