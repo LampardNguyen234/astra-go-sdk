@@ -1,12 +1,17 @@
 package client
 
 import (
+	"fmt"
 	"github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
+	"github.com/LampardNguyen234/astra-go-sdk/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankTypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/pkg/errors"
+	"math/big"
 )
 
+// TxSend performs a transfer transaction.
+// If sender is not the owner, it performs a txGrantExec transaction.
 func (c *CosmosClient) TxSend(p msg_params.TxSendRequestParams) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
@@ -30,4 +35,18 @@ func (c *CosmosClient) TxSend(p msg_params.TxSendRequestParams) (*sdk.TxResponse
 	}
 
 	return c.BuildAndSendTx(p.TxParams, msg)
+}
+
+func (c *CosmosClient) TxGrantSend(p msg_params.TxGrantParams, maxSpent *big.Int) (*sdk.TxResponse, error) {
+	if _, err := p.IsValid(); err != nil {
+		return nil, err
+	}
+
+	if maxSpent == nil {
+		return nil, fmt.Errorf("empty Amount")
+	}
+
+	auth := bankTypes.NewSendAuthorization(sdk.NewCoins(sdk.NewCoin(common.BaseDenom, sdk.NewIntFromBigInt(maxSpent))))
+
+	return c.txGrantAuthorization(p, auth)
 }

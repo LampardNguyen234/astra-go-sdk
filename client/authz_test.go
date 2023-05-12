@@ -16,7 +16,6 @@ func TestCosmosClient_GranterGrants(t *testing.T) {
 	for _, grant := range resp {
 		fmt.Println(grant.Granter, grant.Grantee, grant.Expiration.String(), grant.Authorization)
 	}
-
 }
 
 func TestCosmosClient_GranteeGrants(t *testing.T) {

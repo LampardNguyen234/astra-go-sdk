@@ -2,13 +2,13 @@ package client
 
 import (
 	"fmt"
-	msg_params2 "github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
+	"github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingTypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // TxDelegate creates a delegation transaction.
-func (c *CosmosClient) TxDelegate(p msg_params2.TxDelegateParams) (*sdk.TxResponse, error) {
+func (c *CosmosClient) TxDelegate(p msg_params.TxDelegateParams) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
 	}
@@ -22,8 +22,10 @@ func (c *CosmosClient) TxDelegate(p msg_params2.TxDelegateParams) (*sdk.TxRespon
 	return c.BuildAndSendTx(p.TxParams, msg)
 }
 
-// TxGrantDelegate creates a staking delegation grant.
-func (c *CosmosClient) TxGrantDelegate(p msg_params2.TxStakingGrantParams) (*sdk.TxResponse, error) {
+// TxStakingGrant creates a staking grant.
+func (c *CosmosClient) TxStakingGrant(p msg_params.TxStakingGrantParams,
+	authzType stakingTypes.AuthorizationType,
+) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
 	}
@@ -31,7 +33,7 @@ func (c *CosmosClient) TxGrantDelegate(p msg_params2.TxStakingGrantParams) (*sdk
 	auth, err := stakingTypes.NewStakeAuthorization(
 		p.Allowed(),
 		p.Denied(),
-		stakingTypes.AuthorizationType_AUTHORIZATION_TYPE_DELEGATE,
+		authzType,
 		p.Amount,
 	)
 	if err != nil {

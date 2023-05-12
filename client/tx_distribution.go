@@ -2,13 +2,13 @@ package client
 
 import (
 	"fmt"
-	msg_params2 "github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
+	"github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrType "github.com/cosmos/cosmos-sdk/x/distribution/types"
 )
 
 // TxWithdrawReward creates a staking reward withdrawal transaction.
-func (c *CosmosClient) TxWithdrawReward(p msg_params2.TxWithdrawRewardParams) (*sdk.TxResponse, error) {
+func (c *CosmosClient) TxWithdrawReward(p msg_params.TxWithdrawRewardParams) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
 	}
@@ -28,12 +28,12 @@ func (c *CosmosClient) TxWithdrawReward(p msg_params2.TxWithdrawRewardParams) (*
 }
 
 // TxGrantWithdrawReward creates a staking reward withdrawal grant.
-func (c *CosmosClient) TxGrantWithdrawReward(p msg_params2.TxGrantParams) (*sdk.TxResponse, error) {
+func (c *CosmosClient) TxGrantWithdrawReward(p msg_params.TxGrantParams) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
 	}
 
-	auth, err := msg_params2.NewAuthorization(sdk.MsgTypeURL(&distrType.MsgWithdrawDelegatorReward{}), nil)
+	auth, err := msg_params.NewAuthorization(sdk.MsgTypeURL(&distrType.MsgWithdrawDelegatorReward{}), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build authorization: %v", err)
 	}

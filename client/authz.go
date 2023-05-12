@@ -21,7 +21,7 @@ func NewAuthzClient(conn grpc.ClientConn) *AuthzClient {
 
 // Grants returns a list of `Authorization`, granted to the grantee by the granter.
 // If msgTypeURL is provided, it will only return the grants matching with the msgTypeURL.
-func (c *CosmosClient) Grants(granterStr, granteeStr, msgTypeURL string) ([]*authz.Grant, error) {
+func (c *CosmosClient) Grants(granterStr, granteeStr, msgTypeURL string) ([]*Grant, error) {
 	granter, err := account.ParseCosmosAddress(granterStr)
 	if err != nil {
 		return nil, errors.Wrapf(ErrInvalidAccAddress, fmt.Sprintf("%v: %v", granterStr, err.Error()))
@@ -40,11 +40,11 @@ func (c *CosmosClient) Grants(granterStr, granteeStr, msgTypeURL string) ([]*aut
 		return nil, err
 	}
 
-	return resp.Grants, nil
+	return newGrants(c.Codec, resp.Grants...)
 }
 
 // GranterGrants returns a list of `Authorization` granted by the granter.
-func (c *CosmosClient) GranterGrants(granterStr string) ([]*authz.GrantAuthorization, error) {
+func (c *CosmosClient) GranterGrants(granterStr string) ([]*GrantAuthorization, error) {
 	granter, err := account.ParseCosmosAddress(granterStr)
 	if err != nil {
 		return nil, errors.Wrapf(ErrInvalidAccAddress, fmt.Sprintf("%v: %v", granterStr, err.Error()))
@@ -57,11 +57,11 @@ func (c *CosmosClient) GranterGrants(granterStr string) ([]*authz.GrantAuthoriza
 		return nil, err
 	}
 
-	return resp.Grants, nil
+	return newGrantAuthorizations(c.Codec, resp.Grants...)
 }
 
 // GranteeGrants returns a list of `Authorization` granted to the grantee.
-func (c *CosmosClient) GranteeGrants(granteeStr string) ([]*authz.GrantAuthorization, error) {
+func (c *CosmosClient) GranteeGrants(granteeStr string) ([]*GrantAuthorization, error) {
 	grantee, err := account.ParseCosmosAddress(granteeStr)
 	if err != nil {
 		return nil, errors.Wrapf(ErrInvalidAccAddress, fmt.Sprintf("%v: %v", granteeStr, err.Error()))
@@ -74,5 +74,5 @@ func (c *CosmosClient) GranteeGrants(granteeStr string) ([]*authz.GrantAuthoriza
 		return nil, err
 	}
 
-	return resp.Grants, nil
+	return newGrantAuthorizations(c.Codec, resp.Grants...)
 }
