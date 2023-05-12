@@ -42,7 +42,7 @@ func (c *CosmosClient) DelegationDetail(addr string) (map[string]DelegationDetai
 	}
 
 	for _, val := range validators {
-		resp, err := c.StakingClient.QueryClient.Delegation(c.ctx, &stakingTypes.QueryDelegationRequest{
+		resp, err := c.staking.QueryClient.Delegation(c.ctx, &stakingTypes.QueryDelegationRequest{
 			DelegatorAddr: delegator.String(),
 			ValidatorAddr: val.OperatorAddress,
 		})
@@ -64,7 +64,7 @@ func (c *CosmosClient) DelegationDetail(addr string) (map[string]DelegationDetai
 
 // AllValidators returns all validators matching with the given status.
 func (c *CosmosClient) AllValidators(status stakingTypes.BondStatus) ([]stakingTypes.Validator, error) {
-	ret, err := c.StakingClient.QueryClient.Validators(context.Background(), &stakingTypes.QueryValidatorsRequest{
+	ret, err := c.staking.QueryClient.Validators(context.Background(), &stakingTypes.QueryValidatorsRequest{
 		Status: status.String(),
 	})
 	if err != nil {
@@ -76,29 +76,10 @@ func (c *CosmosClient) AllValidators(status stakingTypes.BondStatus) ([]stakingT
 
 // GetValidatorDetail returns the detail of a validator given its address.
 func (c *CosmosClient) GetValidatorDetail(valAddress string) (*stakingTypes.Validator, error) {
-	resp, err := c.StakingClient.Validator(context.Background(), &stakingTypes.QueryValidatorRequest{ValidatorAddr: valAddress})
+	resp, err := c.staking.Validator(context.Background(), &stakingTypes.QueryValidatorRequest{ValidatorAddr: valAddress})
 	if err != nil {
 		return nil, err
 	}
 
 	return &resp.Validator, nil
 }
-
-//// Delegate creates a delegation transaction.
-//func (c *CosmosClient) Delegate(params DelegateRequestParams) (string, error) {
-//	// preparation
-//	delAddr, err := account.NewCosmosAddressFromStr(params.DelegateAddr)
-//	if err != nil {
-//		return "", err
-//	}
-//	valAddr, err := sdk.ValAddressFromBech32(params.ValidatorAddr)
-//	if err != nil {
-//		return "", err
-//	}
-//	amount := sdk.NewCoin(common.BaseDenom, sdk.NewIntFromBigInt(params.Amount))
-//	msg := stakingTypes.NewMsgDelegate(delAddr, valAddr, amount)
-//
-//	// build tx
-//
-//	return "", nil
-//}

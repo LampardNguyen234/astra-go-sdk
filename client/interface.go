@@ -19,6 +19,7 @@ type AccountInfoI interface {
 
 // AccountRetrieverI specifies required methods for checking the sender account.
 type AccountRetrieverI interface {
+	Balance(address string) (*AccountBalance, error)
 	AccountExists(address string) error
 	AccountInfo(addr string) (AccountInfoI, error)
 	TotalAccounts() (uint64, error)

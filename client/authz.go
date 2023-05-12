@@ -31,7 +31,7 @@ func (c *CosmosClient) Grants(granterStr, granteeStr, msgTypeURL string) ([]*aut
 		return nil, errors.Wrapf(ErrInvalidAccAddress, fmt.Sprintf("%v: %v", granteeStr, err.Error()))
 	}
 
-	resp, err := c.AuthzClient.Grants(c.ctx, &authz.QueryGrantsRequest{
+	resp, err := c.authz.Grants(c.ctx, &authz.QueryGrantsRequest{
 		Granter:    granter.String(),
 		Grantee:    grantee.String(),
 		MsgTypeUrl: msgTypeURL,
@@ -50,7 +50,7 @@ func (c *CosmosClient) GranterGrants(granterStr string) ([]*authz.GrantAuthoriza
 		return nil, errors.Wrapf(ErrInvalidAccAddress, fmt.Sprintf("%v: %v", granterStr, err.Error()))
 	}
 
-	resp, err := c.AuthzClient.GranterGrants(c.ctx, &authz.QueryGranterGrantsRequest{
+	resp, err := c.authz.GranterGrants(c.ctx, &authz.QueryGranterGrantsRequest{
 		Granter: granter.String(),
 	})
 	if err != nil {
@@ -67,7 +67,7 @@ func (c *CosmosClient) GranteeGrants(granteeStr string) ([]*authz.GrantAuthoriza
 		return nil, errors.Wrapf(ErrInvalidAccAddress, fmt.Sprintf("%v: %v", granteeStr, err.Error()))
 	}
 
-	resp, err := c.AuthzClient.GranteeGrants(c.ctx, &authz.QueryGranteeGrantsRequest{
+	resp, err := c.authz.GranteeGrants(c.ctx, &authz.QueryGranteeGrantsRequest{
 		Grantee: grantee.String(),
 	})
 	if err != nil {

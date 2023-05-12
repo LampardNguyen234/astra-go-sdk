@@ -1,7 +1,6 @@
 package client
 
 import (
-	clientTx "github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkTx "github.com/cosmos/cosmos-sdk/types/tx"
 )
@@ -34,11 +33,4 @@ func (c *CosmosClient) EstimateGas(tx Tx, msgs ...sdk.Msg) (uint64, error) {
 	estimatedGas := uint64(tx.txf.GasAdjustment() * float64(simRes.GasInfo.GasUsed))
 	tx.txf = tx.txf.WithGas(estimatedGas)
 	return estimatedGas, nil
-}
-
-// BuildSimTx creates an unsigned tx with an empty single signature and returns
-// the encoded transaction or an error if the unsigned transaction cannot be
-// built.
-func BuildSimTx(txf clientTx.Factory, msgs ...sdk.Msg) ([]byte, error) {
-	return txf.BuildSimTx(msgs...)
 }

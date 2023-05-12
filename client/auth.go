@@ -21,8 +21,8 @@ func NewAuthClient(conn grpc.ClientConn) *AuthClient {
 
 // AccountInfo returns a authTypes.AccountI for the given address.
 func (c *CosmosClient) AccountInfo(addr string) (AccountInfoI, error) {
-	resp, err := c.AuthClient.QueryClient.Account(c.ctx, &authTypes.QueryAccountRequest{Address: addr})
-	if err != nil {
+	resp, err := c.auth.QueryClient.Account(c.ctx, &authTypes.QueryAccountRequest{Address: addr})
+	if err != nil || resp == nil {
 		return nil, err
 	}
 
@@ -56,7 +56,7 @@ func (c *CosmosClient) AccountExists(addr string) error {
 
 // TotalAccounts returns the number of accounts on the blockchain.
 func (c *CosmosClient) TotalAccounts() (uint64, error) {
-	resp, err := c.AuthClient.Accounts(c.ctx, &authTypes.QueryAccountsRequest{
+	resp, err := c.auth.Accounts(c.ctx, &authTypes.QueryAccountsRequest{
 		Pagination: &query.PageRequest{
 			Limit:      1,
 			CountTotal: true,

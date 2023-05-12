@@ -57,7 +57,7 @@ func (c *CosmosClient) DelegationRewards(delAddr, valAddr string) (sdk.Dec, erro
 		return sdk.ZeroDec(), errors.Wrapf(ErrInvalidValAddress, err.Error())
 	}
 
-	resp, err := c.DistrClient.DelegationRewards(c.ctx, &distrType.QueryDelegationRewardsRequest{
+	resp, err := c.distr.DelegationRewards(c.ctx, &distrType.QueryDelegationRewardsRequest{
 		DelegatorAddress: delegator.String(),
 		ValidatorAddress: valAddr,
 	})

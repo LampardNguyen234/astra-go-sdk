@@ -34,7 +34,7 @@ func (c *CosmosClient) Balance(strAddr string) (*AccountBalance, error) {
 		return nil, errors.Wrapf(ErrInvalidAccAddress, err.Error())
 	}
 
-	total, err := c.BankClient.QueryClient.Balance(c.ctx, &bankTypes.QueryBalanceRequest{
+	total, err := c.bank.QueryClient.Balance(c.ctx, &bankTypes.QueryBalanceRequest{
 		Address: addr.String(),
 		Denom:   common.BaseDenom,
 	})
@@ -42,7 +42,7 @@ func (c *CosmosClient) Balance(strAddr string) (*AccountBalance, error) {
 		return nil, err
 	}
 
-	unlocked, err := c.BankClient.QueryClient.SpendableBalances(c.ctx, &bankTypes.QuerySpendableBalancesRequest{
+	unlocked, err := c.bank.QueryClient.SpendableBalances(c.ctx, &bankTypes.QuerySpendableBalancesRequest{
 		Address:    addr.String(),
 		Pagination: nil,
 	})
