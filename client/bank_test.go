@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"github.com/tendermint/tendermint/libs/json"
 	"testing"
 )
 
@@ -11,5 +12,6 @@ func TestCosmosClient_Balance(t *testing.T) {
 		panic(err)
 	}
 
-	fmt.Println(ret)
+	jsb, _ := json.MarshalIndent(ret, "", "\t")
+	fmt.Println(string(jsb))
 }
