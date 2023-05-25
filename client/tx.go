@@ -89,6 +89,9 @@ func (c *CosmosClient) buildAndBroadcastTx(txBuilder client.TxBuilder) (*types.T
 	}
 
 	resp, err := c.BroadcastTx(rawTx)
+	if err != nil {
+		return nil, err
+	}
 	if resp.Code != 0 {
 		err = errors.Wrapf(ErrBroadcastTx, resp.RawLog)
 	}

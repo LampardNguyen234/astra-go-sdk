@@ -9,8 +9,8 @@ import (
 
 var (
 	c                 *CosmosClient
-	privateKey        = ""
-	granteePrivateKey = ""
+	privateKey        = "58814f8e23b9ed9c0079c33610e4db38c56f38f5915ed29bb9346d94f413acb4"
+	granteePrivateKey = "7da1d31c1a25cb038d50b5a38c899cc95c4ca6f49455035a171afa8fd9a25793"
 	addr              string
 	toAddr            string
 
@@ -48,6 +48,9 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	granterAddr = addr
+	granteeAddr = toAddr
 
 	common.Init()
 }
