@@ -1,100 +1,77 @@
 package client
 
 import (
-	"github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/pkg/errors"
+	"context"
+	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
+	"math/big"
+	"time"
 )
 
-type Tx struct {
-	txf              tx.Factory
-	txConfig         client.TxConfig
-	chainID          string
-	params           msg_params.TxParams
-	accountRetriever AccountRetrieverI
+func (c *CosmosClient) TxByHash(hash string) (*sdk.TxResponse, error) {
+	resp, err := tx.QueryTx(c.BaseClient.Context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
-// NewTx creates a new Tx from the given parameters.
-func (c *CosmosClient) NewTx(txParams msg_params.TxParams) *Tx {
-	gasPrice := txParams.GasPrice
-	if gasPrice == "" {
-		gasPrice = msg_params.DefaultTxParams().GasPrice
-	}
-	gasLimit := txParams.GasLimit
-	if gasLimit == 0 {
-		gasLimit = msg_params.DefaultTxParams().GasLimit
-	}
-	gasAdjustment := txParams.GasAdjustment
-	if gasAdjustment == 0 {
-		gasAdjustment = msg_params.DefaultTxParams().GasAdjustment
+// BlockTxsByHeight retrieves the receipts of all transaction in a block given its height.
+func (c *CosmosClient) BlockTxsByHeight(ctx context.Context, blk *big.Int) ([]*sdk.TxResponse, error) {
+	height := blk.Int64()
+	block, err := c.Client.Block(ctx, &height)
+	if err != nil {
+		return nil, err
 	}
 
-	txf := tx.Factory{}.
-		WithChainID(c.BaseClient.ChainID).
-		WithTxConfig(c.BaseClient.TxConfig).
-		WithGasAdjustment(gasAdjustment).
-		WithGasPrices(gasPrice).
-		WithGas(gasLimit).
-		WithSignMode(c.BaseClient.TxConfig.SignModeHandler().DefaultMode())
-
-	return &Tx{
-		txf:              txf,
-		params:           txParams,
-		txConfig:         c.BaseClient.TxConfig,
-		chainID:          c.BaseClient.ChainID,
-		accountRetriever: c,
-	}
-}
-
-// BuildAndSendTx creates and sends a transaction with given parameters.
-func (c *CosmosClient) BuildAndSendTx(txParams msg_params.TxParams, msgs ...types.Msg) (*types.TxResponse, error) {
-	if _, err := txParams.IsValid(); err != nil {
-		return nil, errors.Wrapf(err, "invalid txParams")
-	}
-	tmpTx := c.NewTx(txParams)
-	if tmpTx.txf.Gas() == 0 {
-		estimatedGas, err := c.EstimateGas(*tmpTx, msgs...)
+	res := make([]*sdk.TxResponse, 0)
+	for _, tx := range block.Block.Txs {
+		receipt, err := c.TxByHash(fmt.Sprintf("%X", tx.Hash()))
 		if err != nil {
 			return nil, err
 		}
 
-		tmpTx.txf = tmpTx.txf.WithGas(estimatedGas)
+		res = append(res, receipt)
 	}
 
-	txBuilder, err := tmpTx.Build(msgs...)
-	if err != nil {
-		return nil, errors.Wrapf(ErrBuildTx, err.Error())
-	}
-
-	return c.buildAndBroadcastTx(txBuilder)
+	return res, nil
 }
 
-// EncodeTx generates the raw transaction given a client.TxBuilder.
-func (c *CosmosClient) EncodeTx(txBuilder client.TxBuilder) ([]byte, error) {
-	rawTx, err := c.TxConfig.TxEncoder()(txBuilder.GetTx())
-	if err != nil {
-		return nil, errors.Wrapf(ErrBuildTx, err.Error())
+func (c *CosmosClient) ListenToTxs(ctx context.Context, txResult chan interface{}, startBlk *big.Int) {
+	var currentBlk *big.Int
+	if startBlk != nil {
+		currentBlk = new(big.Int).SetUint64(startBlk.Uint64())
 	}
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			head, err := c.LatestBlockHeight(ctx)
+			if err != nil {
+				time.Sleep(3 * time.Second)
+				continue
+			}
+			if currentBlk == nil || currentBlk.Cmp(new(big.Int).SetUint64(0)) <= 0 {
+				currentBlk = big.NewInt(head.Int64())
+			}
+			if head.Cmp(currentBlk) < 0 {
+				time.Sleep(3 * time.Second)
+				continue
+			}
 
-	return rawTx, nil
+			txs, err := c.BlockTxsByHeight(ctx, currentBlk)
+			if err != nil {
+				continue
+			}
+			for _, tmpTx := range txs {
+				txResult <- tmpTx
+			}
+
+			currentBlk = currentBlk.Add(currentBlk, big.NewInt(1))
+		}
+	}
 }
 
-// buildAndBroadcastTx performs EncodeTx and then BroadcastTx.
-func (c *CosmosClient) buildAndBroadcastTx(txBuilder client.TxBuilder) (*types.TxResponse, error) {
-	rawTx, err := c.EncodeTx(txBuilder)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.BroadcastTx(rawTx)
-	if err != nil {
-		return nil, err
-	}
-	if resp.Code != 0 {
-		err = errors.Wrapf(ErrBroadcastTx, resp.RawLog)
-	}
-
-	return resp, err
-}
