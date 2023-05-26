@@ -11,7 +11,7 @@ import (
 )
 
 // TxSend performs a transfer transaction.
-// If sender is not the owner, it performs a txGrantExec transaction.
+// If sender is not the owner, it performs a TxGrantExec transaction.
 func (c *CosmosClient) TxSend(p msg_params.TxSendRequestParams) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (c *CosmosClient) TxSend(p msg_params.TxSendRequestParams) (*sdk.TxResponse
 
 	msg := bankTypes.NewMsgSend(from, to, p.SendAmount())
 	if from.String() != p.Operator().String() {
-		return c.txGrantExec(p.TxParams, msg)
+		return c.TxGrantExec(p.TxParams, msg)
 	}
 
 	return c.BuildAndSendTx(p.TxParams, msg)

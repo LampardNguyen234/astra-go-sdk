@@ -197,7 +197,7 @@ func TestCosmosClient_TxGrantMsgExec(t *testing.T) {
 	txParams := msg_params.TxParams{
 		PrivateKey: grantee2.String(),
 	}
-	resp, err = c.txGrantExec(txParams, &tmpMsg)
+	resp, err = c.TxGrantExec(txParams, &tmpMsg)
 	if err != nil {
 		panic(err)
 	}

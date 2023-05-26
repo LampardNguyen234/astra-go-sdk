@@ -16,7 +16,7 @@ func (c *CosmosClient) TxDelegate(p msg_params.TxDelegateParams) (*sdk.TxRespons
 	delegator := p.DelegatorAddress()
 	msg := stakingTypes.NewMsgDelegate(p.DelegatorAddress(), p.ValidatorAddress(), p.DelegateAmount())
 	if delegator.String() != p.Operator().String() { // grant execution
-		return c.txGrantExec(p.TxParams, msg)
+		return c.TxGrantExec(p.TxParams, msg)
 	}
 
 	return c.BuildAndSendTx(p.TxParams, msg)

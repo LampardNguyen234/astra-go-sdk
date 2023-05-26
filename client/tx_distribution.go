@@ -21,7 +21,7 @@ func (c *CosmosClient) TxWithdrawReward(p msg_params.TxWithdrawRewardParams) (*s
 		delegator, p.ValidatorAddress(),
 	)
 	if delegator.String() != from.String() { // grant execution
-		return c.txGrantExec(p.TxParams, msg)
+		return c.TxGrantExec(p.TxParams, msg)
 	}
 
 	return c.BuildAndSendTx(p.TxParams, msg)

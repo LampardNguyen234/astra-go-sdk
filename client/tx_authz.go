@@ -103,7 +103,7 @@ func (c *CosmosClient) txGrantAuthorization(p msg_params.TxGrantParams, auths ..
 	return c.BuildAndSendTx(p.TxParams, msgs...)
 }
 
-func (c *CosmosClient) txGrantExec(p msg_params.TxParams, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
+func (c *CosmosClient) TxGrantExec(p msg_params.TxParams, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
 	}
