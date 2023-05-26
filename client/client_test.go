@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"github.com/LampardNguyen234/astra-go-sdk/account"
 	"github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
 	"github.com/LampardNguyen234/astra-go-sdk/common"
@@ -51,6 +52,8 @@ func init() {
 
 	granterAddr = addr
 	granteeAddr = toAddr
+
+	fmt.Println(addr, toAddr)
 
 	common.Init()
 }

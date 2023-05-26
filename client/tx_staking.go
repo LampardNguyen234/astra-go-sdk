@@ -30,6 +30,16 @@ func (c *CosmosClient) TxStakingGrant(p msg_params.TxStakingGrantParams,
 		return nil, err
 	}
 
+	if len(p.AllowedList) == 0 && len(p.DeniedList) == 0 {
+		validators, err := c.AllValidators(stakingTypes.Bonded)
+		if err != nil {
+			return nil, err
+		}
+		for _, val := range validators {
+			p.AllowedList = append(p.AllowedList, val.OperatorAddress)
+		}
+	}
+
 	auth, err := stakingTypes.NewStakeAuthorization(
 		p.Allowed(),
 		p.Denied(),

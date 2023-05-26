@@ -272,3 +272,30 @@ func TestCosmosClient_txGrantAuthorization(t *testing.T) {
 		time.Sleep(10 * time.Second)
 	}
 }
+
+func TestCosmosClientWithdrawAndStake(t *testing.T) {
+	p := msg_params.TxParams{
+		PrivateKey: granteePrivateKey,
+	}
+
+	from := account.MustParseCosmosAddress(addr)
+	val := account.MustParseCosmosValidatorAddress("astravaloper1u7gf4z49v53yrxy6ggrzhxfqj46c3ap4tzku46")
+
+	resp, err := c.TxGrantExec(
+		p,
+		distrType.NewMsgWithdrawDelegatorReward(
+			from,
+			val,
+		),
+		stakingTypes.NewMsgDelegate(
+			from,
+			val,
+			sdk.NewCoin(common.BaseDenom, sdk.NewInt(1000000000000)),
+		),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("txHash: %v\n", resp.TxHash)
+}

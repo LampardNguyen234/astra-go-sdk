@@ -7,7 +7,7 @@ import (
 )
 
 func TestStakingClient_DelegationDetail(t *testing.T) {
-	ret, err := c.DelegationDetail("astra1xdmyqh8td7663wu9sz3yult2f6dr3q028t8u3x")
+	ret, err := c.DelegationDetail("astra1re7nrzgtcnqc3j0duq3jrv94fwxfxfknyelfkg")
 	if err != nil {
 		panic(err)
 	}
