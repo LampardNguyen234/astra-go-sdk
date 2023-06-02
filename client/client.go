@@ -27,6 +27,7 @@ type CosmosClient struct {
 	authz   *AuthzClient
 	distr   *DistrClient
 	staking *StakingClient
+	vesting *VestingClient
 }
 
 // NewCosmosClient creates a new cosmos client.
@@ -63,5 +64,6 @@ func NewCosmosClient(cfg CosmosClientConfig) (*CosmosClient, error) {
 		bank:       NewBankClient(clientCtx),
 		distr:      NewDistrClient(clientCtx),
 		staking:    NewStakingClient(clientCtx),
+		vesting:    NewVestingClient(clientCtx),
 	}, nil
 }

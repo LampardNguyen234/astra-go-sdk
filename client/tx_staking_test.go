@@ -10,10 +10,11 @@ import (
 )
 
 func TestCosmosClient_TxDelegate(t *testing.T) {
+	amt, _ := new(big.Int).SetString("30000000000000000000", 10)
 	p := msg_params.TxDelegateParams{
 		TxParams:   *defaultTxParams,
 		ValAddress: valAddr,
-		Amount:     new(big.Int).SetUint64(testAmt),
+		Amount:     amt,
 	}
 
 	resp, err := c.TxDelegate(p)
