@@ -57,3 +57,12 @@ func TestCosmosClient_AutoCompound(t *testing.T) {
 		fmt.Printf("txHash: %v\n", resp.TxHash)
 	}
 }
+
+func TestCosmosClient_DelegationDetail(t *testing.T) {
+	resp, err := c.DelegationDetail(addr)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(resp)
+}
