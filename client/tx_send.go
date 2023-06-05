@@ -48,5 +48,5 @@ func (c *CosmosClient) TxGrantSend(p msg_params.TxGrantParams, maxSpent *big.Int
 
 	auth := bankTypes.NewSendAuthorization(sdk.NewCoins(sdk.NewCoin(common.BaseDenom, sdk.NewIntFromBigInt(maxSpent))))
 
-	return c.txGrantAuthorization(p, auth)
+	return c.TxGrantAuthorization(p, auth)
 }

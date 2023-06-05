@@ -76,7 +76,7 @@ func (c *CosmosClient) TxGrantRevoke(p msg_params.TxParams, granteeStr string, m
 	return c.BuildAndSendTx(p, &msg)
 }
 
-func (c *CosmosClient) txGrantAuthorization(p msg_params.TxGrantParams, auths ...authz.Authorization) (*sdk.TxResponse, error) {
+func (c *CosmosClient) TxGrantAuthorization(p msg_params.TxGrantParams, auths ...authz.Authorization) (*sdk.TxResponse, error) {
 	if _, err := p.IsValid(); err != nil {
 		return nil, err
 	}

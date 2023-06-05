@@ -38,5 +38,5 @@ func (c *CosmosClient) TxGrantWithdrawReward(p msg_params.TxGrantParams) (*sdk.T
 		return nil, fmt.Errorf("failed to build authorization: %v", err)
 	}
 
-	return c.txGrantAuthorization(p, auth)
+	return c.TxGrantAuthorization(p, auth)
 }

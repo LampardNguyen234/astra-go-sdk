@@ -53,7 +53,7 @@ func TestCosmosClient_TxGrantRevokeAll(t *testing.T) {
 	for i := 0; i < numTests; i++ {
 		auths = append(auths, randomAuth())
 	}
-	resp, err := c.txGrantAuthorization(p, auths...)
+	resp, err := c.TxGrantAuthorization(p, auths...)
 	if err != nil {
 		panic(err)
 	}
@@ -98,7 +98,7 @@ func TestCosmosClient_TxGranterGrantRevokeAll(t *testing.T) {
 	for i := 0; i < numTests; i++ {
 		auths = append(auths, randomAuth())
 	}
-	resp, err := c.txGrantAuthorization(p, auths...)
+	resp, err := c.TxGrantAuthorization(p, auths...)
 	if err != nil {
 		panic(err)
 	}
@@ -160,7 +160,7 @@ func TestCosmosClient_TxGrantMsgExec(t *testing.T) {
 		Grantee:     grantee2.AccAddress().String(),
 		ExpiredTime: expired,
 	}
-	resp, err = c.txGrantAuthorization(p2, authz.NewGenericAuthorization(sdk.MsgTypeURL(&authz.MsgExec{})))
+	resp, err = c.TxGrantAuthorization(p2, authz.NewGenericAuthorization(sdk.MsgTypeURL(&authz.MsgExec{})))
 	if err != nil {
 		panic(err)
 	}
@@ -260,7 +260,7 @@ func TestCosmosClient_txGrantAuthorization(t *testing.T) {
 	for _, tc := range testCases {
 		msgStr := fmt.Sprintf("tc: %v", tc.name)
 
-		resp, err := c.txGrantAuthorization(tc.params, tc.auth)
+		resp, err := c.TxGrantAuthorization(tc.params, tc.auth)
 		if tc.expectedErr != nil {
 			assert.Error(t, err, msgStr)
 			assert.ErrorContains(t, err, tc.expectedErr.Error(), msgStr)

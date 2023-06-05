@@ -50,5 +50,5 @@ func (c *CosmosClient) TxStakingGrant(p msg_params.TxStakingGrantParams,
 		return nil, fmt.Errorf("failed to build authorization: %v", err)
 	}
 
-	return c.txGrantAuthorization(p.TxGrantParams, auth)
+	return c.TxGrantAuthorization(p.TxGrantParams, auth)
 }
