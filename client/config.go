@@ -38,3 +38,11 @@ func DefaultMainnetConfig() CosmosClientConfig {
 		ChainID:        "astra_11110-1",
 	}
 }
+
+func DefaultLocalConfig() CosmosClientConfig {
+	return CosmosClientConfig{
+		Endpoint:       "http://127.0.0.1",
+		TendermintPort: "26657",
+		ChainID:        "astra_11115-1",
+	}
+}

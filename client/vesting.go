@@ -1,7 +1,12 @@
 package client
 
 import (
+	"fmt"
 	"github.com/LampardNguyen234/astra-go-sdk/account"
+	"github.com/LampardNguyen234/astra-go-sdk/common"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	vestingTypes "github.com/evmos/evmos/v6/x/vesting/types"
 	"github.com/gogo/protobuf/grpc"
 	"github.com/pkg/errors"
@@ -18,6 +23,25 @@ func NewVestingClient(conn grpc.ClientConn) *VestingClient {
 	}
 }
 
+// GetAvailableVestingBalance returns the spendable amount of a vesting address.
+func (c *CosmosClient) GetAvailableVestingBalance(strAddr string) (sdk.Int, error) {
+	vestingBalance, err := c.GetVestingBalance(strAddr)
+	if err != nil {
+		return sdk.ZeroInt(), err
+	}
+
+	balance, err := c.Balance(strAddr)
+	if err != nil {
+		return sdk.ZeroInt(), err
+	}
+
+	totalVesting := vestingBalance.Vested.Add(vestingBalance.Unvested...).Add(vestingBalance.Locked...)
+
+	return vestingBalance.Vested.AmountOf(common.BaseDenom).Sub(
+		totalVesting.AmountOf(common.BaseDenom).Sub(balance.Total),
+	), nil
+}
+
 // GetVestingBalance returns the detail balance of a vesting account.
 func (c *CosmosClient) GetVestingBalance(strAddr string) (*vestingTypes.QueryBalancesResponse, error) {
 	addr, err := account.ParseCosmosAddress(strAddr)
@@ -31,4 +55,28 @@ func (c *CosmosClient) GetVestingBalance(strAddr string) (*vestingTypes.QueryBal
 	}
 
 	return resp, nil
+}
+
+// GetVestingAccount returns the vesting of the given address.
+func (c *CosmosClient) GetVestingAccount(strAddr string) (*vestingTypes.ClawbackVestingAccount, error) {
+	addr, err := account.ParseCosmosAddress(strAddr)
+	if err != nil {
+		return nil, errors.Wrapf(ErrInvalidAccAddress, err.Error())
+	}
+
+	resp, err := c.auth.Account(c.ctx, &authTypes.QueryAccountRequest{Address: addr.String()})
+	if err != nil {
+		return nil, err
+	}
+	if resp.Account == nil {
+		return nil, fmt.Errorf("no account found")
+	}
+
+	var ret exported.VestingAccount
+	err = c.Codec.UnpackAny(resp.Account, &ret)
+	if err != nil {
+		return nil, fmt.Errorf("not a vesting account: %v", err)
+	}
+
+	return ret.(*vestingTypes.ClawbackVestingAccount), nil
 }
