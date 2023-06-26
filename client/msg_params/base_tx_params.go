@@ -11,6 +11,7 @@ type TxParams struct {
 	GasLimit      uint64
 	GasAdjustment float64
 	GasPrice      string
+	Memo          string
 }
 
 // NewTxParams creates a new TxParams from the given parameters.

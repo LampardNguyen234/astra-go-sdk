@@ -29,6 +29,15 @@ func NewPrivateKeyFromString(privateKeyStr string) (*PrivateKey, error) {
 	return &PrivateKey{PrivKey: privateKey, privKeyString: privateKeyStr}, nil
 }
 
+func MustNewPrivateKeyFromString(privateKeyStr string) *PrivateKey {
+	ret, err := NewPrivateKeyFromString(privateKeyStr)
+	if err != nil {
+		panic(err)
+	}
+
+	return ret
+}
+
 func (k PrivateKey) AccAddress() sdk.AccAddress {
 	return sdk.AccAddress(k.PubKey().Address())
 }

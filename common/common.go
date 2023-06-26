@@ -1,6 +1,8 @@
 package common
 
-import "math/big"
+import (
+	"math/big"
+)
 
 const (
 	ChainPrefix = "astra"
@@ -30,7 +32,7 @@ func Float64ToBigInt(amt float64) *big.Int {
 		return new(big.Int).SetInt64(0)
 	}
 
-	tmp := new(big.Int).Exp(AsaDecimalsBigInt, big.NewInt(10), nil)
+	tmp := new(big.Int).Exp(big.NewInt(10), AsaDecimalsBigInt, nil)
 	tmp, _ = new(big.Float).Mul(big.NewFloat(amt), new(big.Float).SetInt(tmp)).Int(nil)
 	return tmp
 }

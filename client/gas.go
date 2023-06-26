@@ -6,13 +6,18 @@ import (
 )
 
 const (
-	maxGasForEstimation = uint64(10000000)
+	maxGasForEstimation = uint64(1000000)
 )
 
 // EstimateGas simulates the execution of a transaction and returns the
 // simulation response obtained by the query and the adjusted gas amount.
 func (c *CosmosClient) EstimateGas(tx Tx, msgs ...sdk.Msg) (uint64, error) {
-	tx.txf = tx.txf.WithGas(maxGasForEstimation)
+	if tx.params.GasLimit != 0 {
+		tx.txf = tx.txf.WithGas(tx.params.GasLimit)
+	} else {
+		tx.txf = tx.txf.WithGas(maxGasForEstimation)
+	}
+
 	txBuilder, err := tx.Build(msgs...)
 	if err != nil {
 		return 0, err

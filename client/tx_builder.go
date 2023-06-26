@@ -37,7 +37,7 @@ func (c *CosmosClient) NewTx(txParams msg_params.TxParams) *Tx {
 		WithGasAdjustment(gasAdjustment).
 		WithGasPrices(gasPrice).
 		WithGas(gasLimit).
-		WithSignMode(c.BaseClient.TxConfig.SignModeHandler().DefaultMode())
+		WithSignMode(c.BaseClient.TxConfig.SignModeHandler().DefaultMode()).WithMemo(txParams.Memo)
 
 	return &Tx{
 		txf:              txf,
