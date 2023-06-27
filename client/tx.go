@@ -49,7 +49,7 @@ func (c *CosmosClient) ListenToTxs(ctx context.Context, txResult chan interface{
 		case <-ctx.Done():
 			return
 		default:
-			head, err := c.LatestBlockHeight(ctx)
+			head, err := c.LatestBlockHeight()
 			if err != nil {
 				time.Sleep(3 * time.Second)
 				continue
@@ -74,4 +74,3 @@ func (c *CosmosClient) ListenToTxs(ctx context.Context, txResult chan interface{
 		}
 	}
 }
-

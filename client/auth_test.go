@@ -2,6 +2,8 @@ package client
 
 import (
 	"fmt"
+	distrType "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -21,4 +23,11 @@ func TestCosmosClient_CountAccounts(t *testing.T) {
 	}
 
 	fmt.Println(resp)
+}
+
+func TestCosmosClient_GetModuleAccount(t *testing.T) {
+	resp, err := c.GetModuleAccount(distrType.ModuleName)
+	assert.NoError(t, err)
+
+	fmt.Println(resp.GetAddress())
 }

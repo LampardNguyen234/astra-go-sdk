@@ -3,13 +3,13 @@ package client
 import (
 	"context"
 	"fmt"
+	"github.com/AstraProtocol/astra/v2/app"
 	"github.com/LampardNguyen234/astra-go-sdk/common"
 	_ "github.com/LampardNguyen234/astra-go-sdk/common"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/evmos/ethermint/encoding"
-	"github.com/evmos/evmos/v6/app"
 	"github.com/tendermint/tendermint/rpc/client/http"
 	"google.golang.org/grpc"
 )
@@ -28,6 +28,7 @@ type CosmosClient struct {
 	distr   *DistrClient
 	staking *StakingClient
 	vesting *VestingClient
+	mint    *MintClient
 }
 
 // NewCosmosClient creates a new cosmos client.
@@ -65,5 +66,6 @@ func NewCosmosClient(cfg CosmosClientConfig) (*CosmosClient, error) {
 		distr:      NewDistrClient(clientCtx),
 		staking:    NewStakingClient(clientCtx),
 		vesting:    NewVestingClient(clientCtx),
+		mint:       NewMintClient(clientCtx),
 	}, nil
 }

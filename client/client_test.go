@@ -21,7 +21,7 @@ var (
 
 func init() {
 	var err error
-	c, err = NewCosmosClient(DefaultMainnetConfig())
+	c, err = NewCosmosClient(DefaultTestnetConfig())
 	if err != nil {
 		panic(err)
 	}

@@ -39,6 +39,24 @@ func (c *CosmosClient) AccountInfo(addr string) (AccountInfoI, error) {
 	return ret, nil
 }
 
+// GetModuleAccount returns the account of the given module.
+func (c *CosmosClient) GetModuleAccount(name string) (AccountInfoI, error) {
+	resp, err := c.auth.ModuleAccountByName(c.ctx, &authTypes.QueryModuleAccountByNameRequest{
+		Name: name,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to query module address of `%v`: %v", name, err)
+	}
+
+	var ret authTypes.AccountI
+	err = c.Codec.UnpackAny(resp.Account, &ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 // AccountExists checks if an account exists given its address.
 func (c *CosmosClient) AccountExists(addr string) error {
 	accAddr, err := account.NewCosmosAddressFromStr(addr)

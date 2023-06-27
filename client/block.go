@@ -1,13 +1,12 @@
 package client
 
 import (
-	"context"
 	"math/big"
 )
 
 // LatestBlockHeight returns the latest block height from the current chain.
-func (c *CosmosClient) LatestBlockHeight(ctx context.Context) (*big.Int, error) {
-	ret, err := c.Client.Block(ctx, nil)
+func (c *CosmosClient) LatestBlockHeight() (*big.Int, error) {
+	ret, err := c.Client.Block(c.ctx, nil)
 	if err != nil {
 		return nil, err
 	}
