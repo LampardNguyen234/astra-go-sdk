@@ -1,6 +1,7 @@
 package client
 
 import (
+	"github.com/AstraProtocol/astra/v2/cmd/config"
 	"github.com/LampardNguyen234/astra-go-sdk/account"
 	"github.com/LampardNguyen234/astra-go-sdk/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -66,4 +67,14 @@ func (c *CosmosClient) DelegationRewards(delAddr, valAddr string) (sdk.Dec, erro
 	}
 
 	return resp.Rewards.AmountOf(common.BaseDenom), nil
+}
+
+// GetCommunityPoolBalance returns the balance of the community pool
+func (c *CosmosClient) GetCommunityPoolBalance() (sdk.Int, error) {
+	resp, err := c.distr.CommunityPool(c.ctx, &distrType.QueryCommunityPoolRequest{})
+	if err != nil {
+		return sdk.ZeroInt(), err
+	}
+
+	return resp.Pool.AmountOf(config.BaseDenom).TruncateInt(), nil
 }

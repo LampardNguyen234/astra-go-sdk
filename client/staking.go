@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	mintTypes "github.com/AstraProtocol/astra/v2/x/mint/types"
 	"github.com/LampardNguyen234/astra-go-sdk/account"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingTypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -82,4 +83,24 @@ func (c *CosmosClient) GetValidatorDetail(valAddress string) (*stakingTypes.Vali
 	}
 
 	return &resp.Validator, nil
+}
+
+// StakingSupply returns the total number of tokens which are bonded.
+func (c *CosmosClient) StakingSupply() (sdk.Int, error) {
+	resp, err := c.staking.Pool(c.ctx, &stakingTypes.QueryPoolRequest{})
+	if err != nil {
+		return sdk.ZeroInt(), err
+	}
+
+	return resp.Pool.BondedTokens, nil
+}
+
+// GetBondedRatio returns the current staking ratio.
+func (c *CosmosClient) GetBondedRatio() (sdk.Dec, error) {
+	resp, err := c.mint.GetBondedRatio(c.ctx, &mintTypes.QueryBondedRatioRequest{})
+	if err != nil {
+		return sdk.ZeroDec(), err
+	}
+
+	return resp.BondedRatio, nil
 }

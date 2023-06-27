@@ -33,3 +33,12 @@ func TestCosmosClient_GetVestingAccount(t *testing.T) {
 
 	fmt.Println(resp.GetVestedOnly(time.Now()))
 }
+
+func TestCosmosClient_GetNextVestingPeriod(t *testing.T) {
+	next, amt, err := c.GetNextVestingPeriod(addr)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(next.String(), amt)
+}

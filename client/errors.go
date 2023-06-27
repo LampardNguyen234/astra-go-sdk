@@ -13,4 +13,6 @@ var (
 
 	ErrInvalidAccAddress = fmt.Errorf("invalid AccAddress")
 	ErrInvalidValAddress = fmt.Errorf("invalid ValAddress")
+
+	ErrInvalidParameters = fmt.Errorf("invalid parameters")
 )

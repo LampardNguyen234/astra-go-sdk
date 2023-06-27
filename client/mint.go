@@ -27,8 +27,9 @@ type ProvisionInfo struct {
 	Inflation            sdk.Dec
 	TotalMintedProvision sdk.Int
 	BlockProvision       sdk.Int
-	Supply               sdk.Int
+	CirculatingSupply    sdk.Int
 	BondedRatio          sdk.Dec
+	StakingSupply        sdk.Int
 	FoundationBalance    sdk.Int
 }
 
@@ -49,6 +50,7 @@ func (c *CosmosClient) MintInfo() (*ProvisionInfo, error) {
 		supKey
 		bondedRatioKey
 		fBalKey
+		stakingSupplyKey
 	)
 	go func() {
 		ret, err := c.MintParams()
@@ -122,6 +124,14 @@ func (c *CosmosClient) MintInfo() (*ProvisionInfo, error) {
 			ch <- msg{fBalKey, ret.Total}
 		}
 	}()
+	go func() {
+		ret, err := c.StakingSupply()
+		if err != nil {
+			ch <- msg{errKey, err}
+		} else {
+			ch <- msg{stakingSupplyKey, ret}
+		}
+	}()
 
 	ctx, cancel := context.WithTimeout(c.ctx, 2*time.Second)
 	defer cancel()
@@ -155,7 +165,7 @@ func (c *CosmosClient) MintInfo() (*ProvisionInfo, error) {
 				ret.BlockProvision = tmp.v.(sdk.Int)
 				count++
 			case supKey:
-				ret.Supply = tmp.v.(sdk.Int)
+				ret.CirculatingSupply = tmp.v.(sdk.Int)
 				count++
 			case bondedRatioKey:
 				ret.BondedRatio = tmp.v.(sdk.Dec)
@@ -163,9 +173,12 @@ func (c *CosmosClient) MintInfo() (*ProvisionInfo, error) {
 			case fBalKey:
 				ret.FoundationBalance = tmp.v.(sdk.Int)
 				count++
+			case stakingSupplyKey:
+				ret.StakingSupply = tmp.v.(sdk.Int)
+				count++
 			}
 		default:
-			if count == 9 {
+			if count == 10 {
 				return ret, nil
 			}
 		}
@@ -231,16 +244,6 @@ func (c *CosmosClient) CirculatingSupply() (sdk.Int, error) {
 	}
 
 	return resp.CirculatingSupply.Amount.TruncateInt(), nil
-}
-
-// GetBondedRatio returns the current staking ratio.
-func (c *CosmosClient) GetBondedRatio() (sdk.Dec, error) {
-	resp, err := c.mint.GetBondedRatio(c.ctx, &mintTypes.QueryBondedRatioRequest{})
-	if err != nil {
-		return sdk.ZeroDec(), err
-	}
-
-	return resp.BondedRatio, nil
 }
 
 // GetFoundationBalance returns the balance of the foundation address.

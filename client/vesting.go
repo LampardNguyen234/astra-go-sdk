@@ -10,6 +10,7 @@ import (
 	vestingTypes "github.com/evmos/evmos/v6/x/vesting/types"
 	"github.com/gogo/protobuf/grpc"
 	"github.com/pkg/errors"
+	"time"
 )
 
 type VestingClient struct {
@@ -79,4 +80,23 @@ func (c *CosmosClient) GetVestingAccount(strAddr string) (*vestingTypes.Clawback
 	}
 
 	return ret.(*vestingTypes.ClawbackVestingAccount), nil
+}
+
+// GetNextVestingPeriod returns the next vesting information of the given address.
+func (c *CosmosClient) GetNextVestingPeriod(strAddr string) (time.Time, sdk.Int, error) {
+	acc, err := c.GetVestingAccount(strAddr)
+	if err != nil {
+		return time.Now(), sdk.ZeroInt(), err
+	}
+
+	next := acc.StartTime
+	count := acc.GetPassedPeriodCount(time.Now())
+	if count == len(acc.VestingPeriods) { // vesting DONE
+		return time.Now(), sdk.ZeroInt(), nil
+	}
+	for i := 0; i < count+1; i++ {
+		next = next.Add(acc.VestingPeriods[i].Duration())
+	}
+
+	return next, acc.VestingPeriods[count+1].Amount.AmountOf(common.BaseDenom), nil
 }
