@@ -14,12 +14,12 @@ func ParseCosmosMsgValue(msg sdk.Msg) (sdk.Int, error) {
 	v := sdk.ZeroInt()
 	switch msg.(type) {
 	case *bankTypes.MsgSend:
-		v = common.ParseCoinsAmount(msg.(*bankTypes.MsgSend).Amount, common.BaseDenom).TruncateInt()
+		v = common.ParseAmount(msg.(*bankTypes.MsgSend).Amount)
 	case *bankTypes.MsgMultiSend:
 		tmpMsg := msg.(*bankTypes.MsgMultiSend)
 		for _, out := range tmpMsg.Outputs {
 			v = v.Add(
-				common.ParseCoinsAmount(out.Coins, common.BaseDenom).TruncateInt(),
+				common.ParseAmount(out.Coins),
 			)
 		}
 
@@ -34,7 +34,7 @@ func ParseCosmosMsgValue(msg sdk.Msg) (sdk.Int, error) {
 
 	case *vestingTypes.MsgCreateClawbackVestingAccount:
 		tmpMsg := msg.(*vestingTypes.MsgCreateClawbackVestingAccount)
-		v = common.ParseCoinsAmount(tmpMsg.VestingPeriods.TotalAmount(), common.BaseDenom).TruncateInt()
+		v = common.ParseAmount(tmpMsg.VestingPeriods.TotalAmount())
 	default:
 		return sdk.ZeroInt(), fmt.Errorf("msg `%v` not supported", sdk.MsgTypeURL(msg))
 	}

@@ -38,8 +38,8 @@ func (c *CosmosClient) GetAvailableVestingBalance(strAddr string) (sdk.Int, erro
 
 	totalVesting := vestingBalance.Vested.Add(vestingBalance.Unvested...).Add(vestingBalance.Locked...)
 
-	return common.ParseCoinsAmount(vestingBalance.Vested, common.BaseDenom).TruncateInt().Sub(
-		common.ParseCoinsAmount(totalVesting, common.BaseDenom).TruncateInt().Sub(balance.Total),
+	return common.ParseAmount(vestingBalance.Vested).Sub(
+		common.ParseAmount(totalVesting).Sub(balance.Total),
 	), nil
 }
 
@@ -132,5 +132,5 @@ func (c *CosmosClient) GetNextVestingPeriod(strAddr string) (time.Time, sdk.Int,
 		next = next.Add(acc.VestingPeriods[i].Duration())
 	}
 
-	return next, common.ParseCoinsAmount(acc.VestingPeriods[count+1].Amount, common.BaseDenom).TruncateInt(), nil
+	return next, common.ParseAmount(acc.VestingPeriods[count+1].Amount), nil
 }

@@ -39,6 +39,23 @@ func Float64ToBigInt(amt float64) *big.Int {
 	return tmp.TruncateInt().BigInt()
 }
 
+// ParseAmount gets the amounts of the given coins w.r.t to the BaseDenom.
+func ParseAmount(coins interface{}) sdk.Int {
+	return ParseAmountWithDenom(coins, BaseDenom).TruncateInt()
+}
+
+// ParseAmountWithDenom gets the amounts of the given coins w.r.t given denom.
+func ParseAmountWithDenom(coins interface{}, denom string) sdk.Dec {
+	if _, ok := coins.(sdk.Coins); ok {
+		return ParseCoinsAmount(coins.(sdk.Coins), denom)
+	}
+	if _, ok := coins.(sdk.DecCoins); ok {
+		return ParseDecCoinsAmount(coins.(sdk.DecCoins), denom)
+	}
+
+	return sdk.ZeroDec()
+}
+
 // ParseCoinsAmount returns the amount of coins w.r.t the given denom.
 func ParseCoinsAmount(coins sdk.Coins, denom string) sdk.Dec {
 	ret := sdk.ZeroDec()

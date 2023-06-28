@@ -1,7 +1,6 @@
 package client
 
 import (
-	"github.com/AstraProtocol/astra/v2/cmd/config"
 	"github.com/LampardNguyen234/astra-go-sdk/account"
 	"github.com/LampardNguyen234/astra-go-sdk/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -22,13 +21,13 @@ func NewDistrClient(conn grpc.ClientConn) *DistrClient {
 }
 
 // AllDelegationRewards returns the delegating reward of a delegator for all validators.
-func (c *CosmosClient) AllDelegationRewards(delAddr string) (map[string]sdk.Dec, error) {
+func (c *CosmosClient) AllDelegationRewards(delAddr string) (map[string]sdk.Int, error) {
 	delegator, err := account.ParseCosmosAddress(delAddr)
 	if err != nil {
 		return nil, errors.Wrapf(ErrInvalidAccAddress, err.Error())
 	}
 
-	ret := make(map[string]sdk.Dec)
+	ret := make(map[string]sdk.Int)
 	delDetail, err := c.DelegationDetail(delegator.String())
 	if err != nil {
 		return nil, err
@@ -47,15 +46,15 @@ func (c *CosmosClient) AllDelegationRewards(delAddr string) (map[string]sdk.Dec,
 }
 
 // DelegationRewards returns the delegating reward of a delegator w.r.t to a validator address.
-func (c *CosmosClient) DelegationRewards(delAddr, valAddr string) (sdk.Dec, error) {
+func (c *CosmosClient) DelegationRewards(delAddr, valAddr string) (sdk.Int, error) {
 	delegator, err := account.ParseCosmosAddress(delAddr)
 	if err != nil {
-		return sdk.ZeroDec(), errors.Wrapf(ErrInvalidAccAddress, err.Error())
+		return sdk.ZeroInt(), errors.Wrapf(ErrInvalidAccAddress, err.Error())
 	}
 
 	_, err = account.ParseCosmosValidatorAddress(valAddr)
 	if err != nil {
-		return sdk.ZeroDec(), errors.Wrapf(ErrInvalidValAddress, err.Error())
+		return sdk.ZeroInt(), errors.Wrapf(ErrInvalidValAddress, err.Error())
 	}
 
 	resp, err := c.distr.DelegationRewards(c.ctx, &distrType.QueryDelegationRewardsRequest{
@@ -63,10 +62,10 @@ func (c *CosmosClient) DelegationRewards(delAddr, valAddr string) (sdk.Dec, erro
 		ValidatorAddress: valAddr,
 	})
 	if err != nil {
-		return sdk.ZeroDec(), err
+		return sdk.ZeroInt(), err
 	}
 
-	return common.ParseDecCoinsAmount(resp.Rewards, common.BaseDenom), nil
+	return common.ParseAmount(resp.Rewards), nil
 }
 
 // GetCommunityPoolBalance returns the balance of the community pool
@@ -76,5 +75,5 @@ func (c *CosmosClient) GetCommunityPoolBalance() (sdk.Int, error) {
 		return sdk.ZeroInt(), err
 	}
 
-	return common.ParseDecCoinsAmount(resp.Pool, config.BaseDenom).TruncateInt(), nil
+	return common.ParseAmount(resp.Pool), nil
 }
