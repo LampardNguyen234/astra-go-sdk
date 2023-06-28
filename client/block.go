@@ -1,6 +1,7 @@
 package client
 
 import (
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	"math/big"
 )
 
@@ -12,4 +13,8 @@ func (c *CosmosClient) LatestBlockHeight() (*big.Int, error) {
 	}
 
 	return new(big.Int).SetUint64(uint64(ret.Block.Height)), nil
+}
+
+func (c *CosmosClient) GetBlockByHeight(height int64) (*coretypes.ResultBlock, error) {
+	return c.Client.Block(c.ctx, &height)
 }

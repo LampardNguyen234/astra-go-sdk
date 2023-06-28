@@ -38,22 +38,56 @@ func (c *CosmosClient) GetAvailableVestingBalance(strAddr string) (sdk.Int, erro
 
 	totalVesting := vestingBalance.Vested.Add(vestingBalance.Unvested...).Add(vestingBalance.Locked...)
 
-	return vestingBalance.Vested.AmountOf(common.BaseDenom).Sub(
-		totalVesting.AmountOf(common.BaseDenom).Sub(balance.Total),
+	return common.ParseCoinsAmount(vestingBalance.Vested, common.BaseDenom).TruncateInt().Sub(
+		common.ParseCoinsAmount(totalVesting, common.BaseDenom).TruncateInt().Sub(balance.Total),
 	), nil
 }
 
+// VestingBalances reports the balances of a vesting account.
+type VestingBalances struct {
+	// Total is the original vesting amount.
+	Total sdk.Coins
+
+	// Locked is the is amount of coins which are locked.
+	Locked sdk.Coins
+
+	// Unlocked is the is amount of coins which are unlocked.
+	Unlocked sdk.Coins
+
+	// Vested is the is amount of coins which are vested.
+	Vested sdk.Coins
+
+	// Unvested is the is amount of coins which are in the vesting period.
+	Unvested sdk.Coins
+}
+
 // GetVestingBalance returns the detail balance of a vesting account.
-func (c *CosmosClient) GetVestingBalance(strAddr string) (*vestingTypes.QueryBalancesResponse, error) {
-	addr, err := account.ParseCosmosAddress(strAddr)
+func (c *CosmosClient) GetVestingBalance(strAddr string) (*VestingBalances, error) {
+	va, err := c.GetVestingAccount(strAddr)
 	if err != nil {
-		return nil, errors.Wrapf(ErrInvalidAccAddress, err.Error())
+		return nil, fmt.Errorf("failed to get vesting account %v: %v", strAddr, err)
 	}
 
-	resp, err := c.vesting.Balances(c.ctx, &vestingTypes.QueryBalancesRequest{Address: addr.String()})
-	if err != nil {
-		return nil, err
+	target := time.Now().Unix()
+	latestBlk, err := c.LatestBlockHeight()
+	if err == nil {
+		blk, err := c.GetBlockByHeight(latestBlk.Int64())
+		if err == nil {
+			target = blk.Block.Time.Unix()
+		}
 	}
+
+	resp := new(VestingBalances)
+	resp.Unlocked = vestingTypes.ReadSchedule(
+		va.GetStartTime(), va.EndTime, va.LockupPeriods, va.OriginalVesting, target,
+	)
+	resp.Locked = va.OriginalVesting.Sub(resp.Unlocked)
+
+	resp.Vested = vestingTypes.ReadSchedule(
+		va.GetStartTime(), va.EndTime, va.VestingPeriods, va.OriginalVesting, target,
+	)
+	resp.Unvested = va.OriginalVesting.Sub(resp.Vested)
+	resp.Total = va.OriginalVesting
 
 	return resp, nil
 }
@@ -98,5 +132,5 @@ func (c *CosmosClient) GetNextVestingPeriod(strAddr string) (time.Time, sdk.Int,
 		next = next.Add(acc.VestingPeriods[i].Duration())
 	}
 
-	return next, acc.VestingPeriods[count+1].Amount.AmountOf(common.BaseDenom), nil
+	return next, common.ParseCoinsAmount(acc.VestingPeriods[count+1].Amount, common.BaseDenom).TruncateInt(), nil
 }

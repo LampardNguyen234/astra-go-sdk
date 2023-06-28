@@ -66,7 +66,7 @@ func (c *CosmosClient) DelegationRewards(delAddr, valAddr string) (sdk.Dec, erro
 		return sdk.ZeroDec(), err
 	}
 
-	return resp.Rewards.AmountOf(common.BaseDenom), nil
+	return common.ParseDecCoinsAmount(resp.Rewards, common.BaseDenom), nil
 }
 
 // GetCommunityPoolBalance returns the balance of the community pool
@@ -76,5 +76,5 @@ func (c *CosmosClient) GetCommunityPoolBalance() (sdk.Int, error) {
 		return sdk.ZeroInt(), err
 	}
 
-	return resp.Pool.AmountOf(config.BaseDenom).TruncateInt(), nil
+	return common.ParseDecCoinsAmount(resp.Pool, config.BaseDenom).TruncateInt(), nil
 }

@@ -48,7 +48,7 @@ func (c *CosmosClient) Balance(strAddr string) (*AccountBalance, error) {
 	})
 
 	tmpTotal := total.GetBalance().Amount
-	tmpUnlocked := unlocked.GetBalances().AmountOf(common.BaseDenom)
+	tmpUnlocked := common.ParseCoinsAmount(unlocked.GetBalances(), common.BaseDenom).TruncateInt()
 
 	return &AccountBalance{
 		Total:    tmpTotal,
