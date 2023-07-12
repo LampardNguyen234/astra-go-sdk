@@ -106,3 +106,43 @@ func MustParseCosmosValidatorAddress(strAddr string) sdk.ValAddress {
 
 	return ret
 }
+
+// CosmosAddressToValAddress converts an address in the cosmos version to the corresponding validator address.
+func CosmosAddressToValAddress(cosmosAddr string) (string, error) {
+	acc, err := NewCosmosAddressFromStr(cosmosAddr)
+	if err != nil {
+		return "", err
+	}
+
+	return sdk.ValAddress(acc.Bytes()).String(), nil
+}
+
+// MustCosmosAddressToValAddress is the same as CosmosAddressToValAddress except that it will panic upon encountering errors.
+func MustCosmosAddressToValAddress(cosmosAddr string) string {
+	addr, err := CosmosAddressToValAddress(cosmosAddr)
+	if err != nil {
+		panic(err)
+	}
+
+	return addr
+}
+
+// ValAddressToCosmosAddress converts a validator address to the corresponding cosmos address.
+func ValAddressToCosmosAddress(cosmosAddr string) (string, error) {
+	acc, err := ParseCosmosValidatorAddress(cosmosAddr)
+	if err != nil {
+		return "", err
+	}
+
+	return sdk.AccAddress(acc.Bytes()).String(), nil
+}
+
+// MustValAddressToCosmosAddress is the same as ValAddressToCosmosAddress except that it will panic upon encountering errors.
+func MustValAddressToCosmosAddress(cosmosAddr string) string {
+	addr, err := ValAddressToCosmosAddress(cosmosAddr)
+	if err != nil {
+		panic(err)
+	}
+
+	return addr
+}

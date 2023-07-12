@@ -18,6 +18,9 @@ type KeyInfo struct {
 
 	// EthAddress is the Eth version of the address.
 	EthAddress string `json:"EthAddress"`
+
+	// ValAddress is the validator version of the address.
+	ValAddress string `json:"ValAddress"`
 }
 
 // NewKeyInfoFromPrivateKey recovers the KeyInfo from the given private key.
@@ -31,5 +34,6 @@ func NewKeyInfoFromPrivateKey(privateKeyStr string) (*KeyInfo, error) {
 		PrivateKey:    privateKeyStr,
 		CosmosAddress: privateKey.AccAddress().String(),
 		EthAddress:    privateKey.HexAddress().String(),
+		ValAddress:    privateKey.ValAddress().String(),
 	}, nil
 }

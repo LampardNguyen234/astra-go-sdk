@@ -50,6 +50,10 @@ func (k PrivateKey) HexAddress() common.Address {
 	return common.BytesToAddress(k.AccAddress().Bytes())
 }
 
+func (k PrivateKey) ValAddress() sdk.ValAddress {
+	return k.AccAddress().Bytes()
+}
+
 func (k PrivateKey) String() string {
 	return k.privKeyString
 }

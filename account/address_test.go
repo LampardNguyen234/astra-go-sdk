@@ -92,3 +92,15 @@ func TestMustHexToCosmosAddress(t *testing.T) {
 		}
 	}
 }
+
+func TestCosmosAddressToValAddress(t *testing.T) {
+	val, err := CosmosAddressToValAddress("astra1kk5ujlxnq7d2ck82evkxputenfg054umlchtpl")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(val)
+}
+
+func TestMustValAddressToCosmosAddress(t *testing.T) {
+	fmt.Println(MustValAddressToCosmosAddress("astravaloper1kk5ujlxnq7d2ck82evkxputenfg054um6pk663"))
+}
