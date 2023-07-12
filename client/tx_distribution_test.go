@@ -65,3 +65,19 @@ func TestCosmosClient_TxGrantWithdrawReward(t *testing.T) {
 	}
 	fmt.Printf("txHash: %v\n", tmpResp.TxHash)
 }
+
+func TestCosmosClient_TxWithdrawCommission(t *testing.T) {
+	txParams := defaultTxParams
+
+	p := msg_params.TxWithdrawCommissionParams{
+		TxParams:   *txParams,
+		ValAddress: "",
+	}
+
+	resp, err := c.TxWithdrawCommission(p)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(*resp)
+}

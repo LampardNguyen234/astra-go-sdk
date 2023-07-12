@@ -6,7 +6,6 @@ import (
 	"github.com/LampardNguyen234/astra-go-sdk/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	vestingTypes "github.com/evmos/evmos/v6/x/vesting/types"
 	"github.com/gogo/protobuf/grpc"
 	"github.com/pkg/errors"
@@ -107,13 +106,13 @@ func (c *CosmosClient) GetVestingAccount(strAddr string) (*vestingTypes.Clawback
 		return nil, fmt.Errorf("no account found")
 	}
 
-	var ret exported.VestingAccount
+	var ret *vestingTypes.ClawbackVestingAccount
 	err = c.Codec.UnpackAny(resp.Account, &ret)
 	if err != nil {
 		return nil, fmt.Errorf("not a vesting account: %v", err)
 	}
 
-	return ret.(*vestingTypes.ClawbackVestingAccount), nil
+	return ret, nil
 }
 
 // GetNextVestingPeriod returns the next vesting information of the given address.

@@ -108,7 +108,7 @@ func (p *TxCreateVestingParams) LockupPeriods() types.Periods {
 		return p.Lockup
 	}
 
-	return types.Periods{}
+	return nil
 }
 
 func (p *TxCreateVestingParams) Funder() sdk.AccAddress {

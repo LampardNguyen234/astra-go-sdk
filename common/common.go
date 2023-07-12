@@ -44,6 +44,11 @@ func ParseAmount(coins interface{}) sdk.Int {
 	return ParseAmountWithDenom(coins, BaseDenom).TruncateInt()
 }
 
+// ParseAmountToDec gets the amounts of the given coins w.r.t to the Denom.
+func ParseAmountToDec(coins interface{}) sdk.Dec {
+	return ParseAmountWithDenom(coins, Denom)
+}
+
 // ParseAmountWithDenom gets the amounts of the given coins w.r.t given denom.
 func ParseAmountWithDenom(coins interface{}, denom string) sdk.Dec {
 	if _, ok := coins.(sdk.Coins); ok {
@@ -51,6 +56,12 @@ func ParseAmountWithDenom(coins interface{}, denom string) sdk.Dec {
 	}
 	if _, ok := coins.(sdk.DecCoins); ok {
 		return ParseDecCoinsAmount(coins.(sdk.DecCoins), denom)
+	}
+	if _, ok := coins.(sdk.Coin); ok {
+		return ParseCoinsAmount(sdk.NewCoins(coins.(sdk.Coin)), denom)
+	}
+	if _, ok := coins.(sdk.DecCoin); ok {
+		return ParseDecCoinsAmount(sdk.NewDecCoins(coins.(sdk.DecCoin)), denom)
 	}
 
 	return sdk.ZeroDec()

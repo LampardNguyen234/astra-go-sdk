@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"github.com/tendermint/tendermint/libs/json"
 	"testing"
-	"time"
 )
 
 func TestCosmosClient_GetAvailableVestingBalance(t *testing.T) {
-	resp, err := c.GetAvailableVestingBalance("0x8AD1C9212FfE46D9Ec23C100571dB336823cA35e")
+	resp, err := c.GetAvailableVestingBalance(addr)
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +31,7 @@ func TestCosmosClient_GetVestingAccount(t *testing.T) {
 		panic(err)
 	}
 
-	fmt.Println(resp.GetVestedOnly(time.Now()))
+	fmt.Println(resp.LockupPeriods)
 }
 
 func TestCosmosClient_GetNextVestingPeriod(t *testing.T) {
