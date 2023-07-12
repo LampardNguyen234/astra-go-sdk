@@ -79,6 +79,8 @@ func TestWallet(t *testing.T) {
 		t.Error(err)
 	}
 	fmt.Println(account.Address.Hex())
+	privKey, _ := wallet.PrivateKeyHex(account)
+	fmt.Println(privKey)
 
 	if account.Address.Hex() != "0xC49926C4124cEe1cbA0Ea94Ea31a6c12318df947" {
 		t.Error("wrong address")
