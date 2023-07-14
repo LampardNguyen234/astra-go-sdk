@@ -4,10 +4,13 @@ import (
 	"context"
 	mintTypes "github.com/AstraProtocol/astra/v2/x/mint/types"
 	"github.com/LampardNguyen234/astra-go-sdk/account"
+	"github.com/LampardNguyen234/astra-go-sdk/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	stakingTypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/gogo/protobuf/grpc"
 	"github.com/pkg/errors"
+	"sort"
 	"strings"
 )
 
@@ -26,7 +29,36 @@ func NewStakingClient(conn grpc.ClientConn) *StakingClient {
 
 type DelegationDetail struct {
 	Validator string  `json:"Validator"`
+	Delegator string  `json:"Delegator"`
 	Amount    sdk.Int `json:"Amount"`
+}
+
+func (c *CosmosClient) Delegation(delAddr, valAddr string) (DelegationDetail, error) {
+	ret := DelegationDetail{}
+	delegator, err := account.ParseCosmosAddress(delAddr)
+	if err != nil {
+		return ret, errors.Wrapf(ErrInvalidAccAddress, err.Error())
+	}
+	validator, err := account.ParseCosmosValidatorAddress(valAddr)
+	if err != nil {
+		return ret, errors.Wrapf(ErrInvalidValAddress, err.Error())
+	}
+
+	resp, err := c.staking.QueryClient.Delegation(c.ctx, &stakingTypes.QueryDelegationRequest{
+		DelegatorAddr: delegator.String(),
+		ValidatorAddr: validator.String(),
+	})
+	if err != nil {
+		return ret, err
+	}
+
+	ret = DelegationDetail{
+		Validator: validator.String(),
+		Delegator: delegator.String(),
+		Amount:    resp.DelegationResponse.Balance.Amount,
+	}
+
+	return ret, nil
 }
 
 // DelegationDetail returns the staking amounts of the given address.
@@ -43,10 +75,7 @@ func (c *CosmosClient) DelegationDetail(addr string) (map[string]DelegationDetai
 	}
 
 	for _, val := range validators {
-		resp, err := c.staking.QueryClient.Delegation(c.ctx, &stakingTypes.QueryDelegationRequest{
-			DelegatorAddr: delegator.String(),
-			ValidatorAddr: val.OperatorAddress,
-		})
+		resp, err := c.Delegation(delegator.String(), val.OperatorAddress)
 		if err != nil {
 			if strings.Contains(err.Error(), "not found for validator") {
 				continue
@@ -54,11 +83,49 @@ func (c *CosmosClient) DelegationDetail(addr string) (map[string]DelegationDetai
 			return nil, err
 		}
 
-		ret[val.OperatorAddress] = DelegationDetail{
-			Validator: val.OperatorAddress,
-			Amount:    resp.DelegationResponse.Balance.Amount,
-		}
+		ret[val.OperatorAddress] = resp
 	}
+
+	return ret, nil
+}
+
+// ValidatorDelegations returns the staking amounts of the given address.
+func (c *CosmosClient) ValidatorDelegations(valAddr string) ([]DelegationDetail, error) {
+	validator, err := account.ParseCosmosValidatorAddress(valAddr)
+	if err != nil {
+		return nil, errors.Wrapf(ErrInvalidAccAddress, err.Error())
+	}
+	ret := make([]DelegationDetail, 0)
+	page := &query.PageRequest{
+		Key:        nil,
+		Offset:     0,
+		CountTotal: true,
+	}
+	count := 0
+	for {
+		delegations, err := c.staking.QueryClient.ValidatorDelegations(c.ctx, &stakingTypes.QueryValidatorDelegationsRequest{
+			ValidatorAddr: validator.String(),
+			Pagination:    page,
+		})
+		if err != nil {
+			return nil, err
+		}
+		for _, delegation := range delegations.DelegationResponses {
+			ret = append(ret, DelegationDetail{
+				Validator: valAddr,
+				Delegator: delegation.Delegation.DelegatorAddress,
+				Amount:    common.ParseAmount(delegation.Balance),
+			})
+		}
+		count += len(delegations.DelegationResponses)
+		if uint64(count) >= delegations.Pagination.Total {
+			break
+		}
+		page.Offset = uint64(count)
+	}
+	sort.SliceStable(ret, func(i, j int) bool {
+		return ret[i].Amount.GTE(ret[j].Amount)
+	})
 
 	return ret, nil
 }

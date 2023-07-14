@@ -60,3 +60,7 @@ func (p TxDelegateParams) ValidatorAddress() sdk.ValAddress {
 func (p TxDelegateParams) DelegateAmount() sdk.Coin {
 	return sdk.NewCoin(common.BaseDenom, sdk.NewIntFromBigInt(p.Amount))
 }
+
+func (p TxDelegateParams) IsGrantExec() bool {
+	return p.DelAddress != "" && p.Operator().String() != p.DelAddress
+}

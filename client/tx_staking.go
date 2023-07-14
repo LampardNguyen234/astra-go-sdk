@@ -5,6 +5,7 @@ import (
 	"github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingTypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/pkg/errors"
 )
 
 // TxDelegate creates a delegation transaction.
@@ -13,9 +14,49 @@ func (c *CosmosClient) TxDelegate(p msg_params.TxDelegateParams) (*sdk.TxRespons
 		return nil, err
 	}
 
-	delegator := p.DelegatorAddress()
 	msg := stakingTypes.NewMsgDelegate(p.DelegatorAddress(), p.ValidatorAddress(), p.DelegateAmount())
-	if delegator.String() != p.Operator().String() { // grant execution
+	if p.IsGrantExec() {
+		return c.TxGrantExec(p.TxParams, msg)
+	}
+
+	return c.BuildAndSendTx(p.TxParams, msg)
+}
+
+func (c *CosmosClient) TxCreateValidator(p msg_params.TxCreateValidatorParams) (*sdk.TxResponse, error) {
+	if _, err := p.IsValid(); err != nil {
+		return nil, err
+	}
+
+	msg, err := stakingTypes.NewMsgCreateValidator(
+		p.ValidatorAddress(),
+		p.PubKey(),
+		p.SelfDelegation(),
+		p.Desc(),
+		p.CommissionRates(),
+		p.MinSelfDelegation(),
+	)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to create msg")
+	}
+	if p.IsGrantExec() {
+		return c.TxGrantExec(p.TxParams, msg)
+	}
+
+	return c.BuildAndSendTx(p.TxParams, msg)
+}
+
+func (c *CosmosClient) TxEditValidator(p msg_params.TxEditValidatorParams) (*sdk.TxResponse, error) {
+	if _, err := p.IsValid(); err != nil {
+		return nil, err
+	}
+
+	msg := stakingTypes.NewMsgEditValidator(
+		p.ValidatorAddress(),
+		p.Desc(),
+		p.NewRate(),
+		p.MinSelfDelegation(),
+	)
+	if p.IsGrantExec() {
 		return c.TxGrantExec(p.TxParams, msg)
 	}
 
