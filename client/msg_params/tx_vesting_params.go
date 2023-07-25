@@ -67,6 +67,9 @@ func (p *TxCreateVestingParams) IsValid() (bool, error) {
 	if len(p.Vesting) == 0 && p.VestingDuration == 0 {
 		return false, fmt.Errorf("require either `Vesting` or `VestingDuration`")
 	}
+	if p.VestingDuration != 0 && p.VestingDuration < int64(p.VestingLength) {
+		return false, fmt.Errorf("require `VestingLength <= VestingDuration`")
+	}
 
 	return true, nil
 }
@@ -87,11 +90,17 @@ func (p *TxCreateVestingParams) VestingPeriods() types.Periods {
 	remaining := sdk.NewCoins(sdk.NewCoin(common.BaseDenom, sdk.NewIntFromBigInt(p.Amount)))
 	each := sdk.NewCoins(sdk.NewCoin(common.BaseDenom, sdk.NewDecFromBigInt(p.Amount).QuoInt64(int64(p.VestingLength)).TruncateInt()))
 	duration := p.VestingDuration / int64(p.VestingLength)
+	if duration == 0 {
+		duration = 1
+	}
 	for i := uint(0); i < p.VestingLength; i++ {
 		tmp := types.Period{}
 		if i == p.VestingLength-1 {
 			tmp.Amount = remaining
 			tmp.Length = p.VestingDuration - int64(p.VestingLength-1)*duration
+			if tmp.Length == 0 {
+				tmp.Length = 1
+			}
 		} else {
 			tmp.Length = duration
 			tmp.Amount = each

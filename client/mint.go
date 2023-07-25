@@ -5,6 +5,7 @@ import (
 	"fmt"
 	mintTypes "github.com/AstraProtocol/astra/v2/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/gogo/protobuf/grpc"
 	"time"
 )
@@ -31,6 +32,8 @@ type ProvisionInfo struct {
 	BondedRatio          sdk.Dec
 	StakingSupply        sdk.Int
 	FoundationBalance    sdk.Int
+	CommunityBalance     sdk.Int
+	FeeCollectorBalance  sdk.Int
 }
 
 func (c *CosmosClient) MintInfo() (*ProvisionInfo, error) {
@@ -51,6 +54,8 @@ func (c *CosmosClient) MintInfo() (*ProvisionInfo, error) {
 		bondedRatioKey
 		fBalKey
 		stakingSupplyKey
+		communityBalKey
+		feeCollectedKey
 	)
 	go func() {
 		ret, err := c.MintParams()
@@ -132,6 +137,26 @@ func (c *CosmosClient) MintInfo() (*ProvisionInfo, error) {
 			ch <- msg{stakingSupplyKey, ret}
 		}
 	}()
+	go func() {
+		ret, err := c.GetCommunityPoolBalance()
+		if err != nil {
+			ch <- msg{errKey, err}
+		} else {
+			ch <- msg{communityBalKey, ret}
+		}
+	}()
+	go func() {
+		feeCollector, err := c.GetModuleAccount(authTypes.FeeCollectorName)
+		if err != nil {
+			ch <- msg{errKey, err}
+		}
+		ret, err := c.Balance(feeCollector.GetAddress().String())
+		if err != nil {
+			ch <- msg{errKey, err}
+		} else {
+			ch <- msg{feeCollectedKey, ret.Total}
+		}
+	}()
 
 	ctx, cancel := context.WithTimeout(c.ctx, 2*time.Second)
 	defer cancel()
@@ -176,9 +201,15 @@ func (c *CosmosClient) MintInfo() (*ProvisionInfo, error) {
 			case stakingSupplyKey:
 				ret.StakingSupply = tmp.v.(sdk.Int)
 				count++
+			case communityBalKey:
+				ret.CommunityBalance = tmp.v.(sdk.Int)
+				count++
+			case feeCollectedKey:
+				ret.FeeCollectorBalance = tmp.v.(sdk.Int)
+				count++
 			}
 		default:
-			if count == 10 {
+			if count == 12 {
 				return ret, nil
 			}
 		}
