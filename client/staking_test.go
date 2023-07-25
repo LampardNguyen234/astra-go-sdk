@@ -13,7 +13,8 @@ func TestStakingClient_DelegationDetail(t *testing.T) {
 		panic(err)
 	}
 
-	fmt.Println(ret)
+	jsb, _ := json.MarshalIndent(ret, "", "\t")
+	fmt.Println(string(jsb))
 }
 
 func TestStakingClient_AllValidators(t *testing.T) {
@@ -24,7 +25,7 @@ func TestStakingClient_AllValidators(t *testing.T) {
 
 	fmt.Println("count:", len(ret))
 	for _, val := range ret {
-		fmt.Println(val)
+		fmt.Println(val.Description)
 	}
 }
 

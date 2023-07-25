@@ -60,6 +60,17 @@ type VestingBalances struct {
 	Unvested sdk.Coins
 }
 
+func (b *VestingBalances) SpendableBalances() sdk.Coins {
+	if b.Unlocked.AmountOf(common.BaseDenom).LTE(b.Vested.AmountOf(common.BaseDenom)) {
+		return b.Unlocked
+	}
+	return b.Vested
+}
+
+func (b *VestingBalances) NonSpendableBalances() sdk.Coins {
+	return b.Total.Sub(b.SpendableBalances())
+}
+
 // GetVestingBalance returns the detail balance of a vesting account.
 func (c *CosmosClient) GetVestingBalance(strAddr string) (*VestingBalances, error) {
 	va, err := c.GetVestingAccount(strAddr)

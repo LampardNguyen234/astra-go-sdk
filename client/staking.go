@@ -28,9 +28,10 @@ func NewStakingClient(conn grpc.ClientConn) *StakingClient {
 }
 
 type DelegationDetail struct {
-	Validator string  `json:"Validator"`
-	Delegator string  `json:"Delegator"`
-	Amount    sdk.Int `json:"Amount"`
+	ValidatorName string  `json:"ValidatorName,omitempty"`
+	Validator     string  `json:"Validator"`
+	Delegator     string  `json:"Delegator"`
+	Amount        sdk.Int `json:"Amount"`
 }
 
 func (c *CosmosClient) Delegation(delAddr, valAddr string) (DelegationDetail, error) {
@@ -82,6 +83,7 @@ func (c *CosmosClient) DelegationDetail(addr string) (map[string]DelegationDetai
 			}
 			return nil, err
 		}
+		resp.ValidatorName = val.GetMoniker()
 
 		ret[val.OperatorAddress] = resp
 	}
