@@ -32,6 +32,7 @@ type DelegationDetail struct {
 	Validator     string  `json:"Validator"`
 	Delegator     string  `json:"Delegator"`
 	Amount        sdk.Int `json:"Amount"`
+	AmountDec     sdk.Dec `json:"AmountDec"`
 }
 
 func (c *CosmosClient) Delegation(delAddr, valAddr string) (DelegationDetail, error) {
@@ -117,6 +118,7 @@ func (c *CosmosClient) ValidatorDelegations(valAddr string) ([]DelegationDetail,
 				Validator: valAddr,
 				Delegator: delegation.Delegation.DelegatorAddress,
 				Amount:    common.ParseAmount(delegation.Balance),
+				AmountDec: common.ParseAmountToDec(delegation.Balance),
 			})
 		}
 		count += len(delegations.DelegationResponses)
