@@ -77,3 +77,58 @@ func (c *CosmosClient) GetCommunityPoolBalance() (sdk.Int, error) {
 
 	return common.ParseAmount(resp.Pool), nil
 }
+
+func (c *CosmosClient) TotalRewardsOnValidator(valAddr string, speedUp ...bool) (sdk.Int, error) {
+	totalRewards := sdk.ZeroInt()
+	delegators, err := c.ValidatorDelegations(valAddr)
+	if err != nil {
+		return totalRewards, errors.Wrapf(err, "failed to get validator delegations")
+	}
+	shouldSpeedUp := len(speedUp) > 0 && speedUp[0]
+	if shouldSpeedUp {
+		type rewardInfo struct {
+			delegator string
+			amount    sdk.Int
+			err       error
+		}
+
+		result := make(chan rewardInfo)
+
+		for _, delegator := range delegators {
+			go func(delegator, validator string) {
+				amt, err := c.DelegationRewards(delegator, validator)
+				result <- rewardInfo{
+					delegator: delegator,
+					amount:    amt,
+					err:       err,
+				}
+			}(delegator.Delegator, delegator.Validator)
+
+		}
+
+		count := 0
+		for {
+			select {
+			case r := <-result:
+				if r.err != nil {
+					return sdk.ZeroInt(), errors.Wrapf(err, "failed to get rewards of %v", r.delegator)
+				}
+				count++
+				totalRewards = totalRewards.Add(r.amount)
+			default:
+				if count == len(delegators) {
+					return totalRewards, nil
+				}
+			}
+		}
+	} else {
+		for _, delegator := range delegators {
+			rewards, err := c.DelegationRewards(delegator.Delegator, delegator.Validator)
+			if err != nil {
+				return totalRewards, errors.Wrapf(err, "failed to get rewards of %v", delegator.Delegator)
+			}
+			totalRewards = totalRewards.Add(rewards)
+		}
+		return totalRewards, nil
+	}
+}
