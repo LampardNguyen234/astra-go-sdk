@@ -22,13 +22,16 @@ type BaseClient struct {
 
 type CosmosClient struct {
 	*BaseClient
-	bank    *BankClient
-	auth    *AuthClient
-	authz   *AuthzClient
-	distr   *DistrClient
-	staking *StakingClient
-	vesting *VestingClient
-	mint    *MintClient
+	bank     *BankClient
+	auth     *AuthClient
+	authz    *AuthzClient
+	distr    *DistrClient
+	feeburn  *FeeburnClient
+	gov      *GovClient
+	slashing *SlashingClient
+	staking  *StakingClient
+	vesting  *VestingClient
+	mint     *MintClient
 }
 
 // NewCosmosClient creates a new cosmos client.
@@ -64,6 +67,9 @@ func NewCosmosClient(cfg CosmosClientConfig) (*CosmosClient, error) {
 		authz:      NewAuthzClient(clientCtx),
 		bank:       NewBankClient(clientCtx),
 		distr:      NewDistrClient(clientCtx),
+		feeburn:    NewFeeburnClient(clientCtx),
+		gov:        NewGovClient(clientCtx),
+		slashing:   NewSlashingClient(clientCtx),
 		staking:    NewStakingClient(clientCtx),
 		vesting:    NewVestingClient(clientCtx),
 		mint:       NewMintClient(clientCtx),
