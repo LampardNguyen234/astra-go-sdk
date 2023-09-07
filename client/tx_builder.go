@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"github.com/LampardNguyen234/astra-go-sdk/client/msg_params"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -53,6 +54,15 @@ func (c *CosmosClient) BuildAndSendTx(txParams msg_params.TxParams, msgs ...type
 	if _, err := txParams.IsValid(); err != nil {
 		return nil, errors.Wrapf(err, "invalid txParams")
 	}
+	if len(msgs) == 0 {
+		return nil, fmt.Errorf("no msg provided")
+	}
+	for i, msg := range msgs {
+		if err := msg.ValidateBasic(); err != nil {
+			return nil, fmt.Errorf("failed to perform msgs[%v].ValidateBasic: %v", i, err)
+		}
+	}
+
 	tmpTx := c.NewTx(txParams)
 	if tmpTx.txf.Gas() == 0 {
 		estimatedGas, err := c.EstimateGas(*tmpTx, msgs...)

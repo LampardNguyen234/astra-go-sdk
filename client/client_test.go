@@ -20,8 +20,9 @@ var (
 )
 
 func init() {
+	cfg := DefaultMainnetConfig()
 	var err error
-	c, err = NewCosmosClient(DefaultMainnetConfig())
+	c, err = NewCosmosClient(cfg)
 	if err != nil {
 		panic(err)
 	}

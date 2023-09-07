@@ -18,14 +18,14 @@ func TestCosmosClient_TxCreateVesting(t *testing.T) {
 	}
 
 	recipient := account.MustNewPrivateKeyFromString(hex.EncodeToString(crypto.Sha256(rand.Bytes(32))))
-	fmt.Printf("recipientKey: %v\n", recipient.String())
+	fmt.Printf("recipientKey: %v, %v\n", recipient.String(), recipient.AccAddress().String())
 
 	p := msg_params.TxCreateVestingParams{
 		TxParams:        *txParams,
 		ToAddr:          recipient.AccAddress().String(),
 		Amount:          new(big.Int).SetUint64(testAmt),
 		VestingLength:   10,
-		VestingDuration: 600,
+		VestingDuration: 60000,
 	}
 
 	resp, err := c.TxCreateVesting(p)

@@ -20,9 +20,12 @@ func TestCosmosClient_GetBlockByHeight(t *testing.T) {
 func TestCosmosClient_StreamBlocks(t *testing.T) {
 	ret := make(chan interface{})
 
-	go c.StreamBlocks(context.Background(), ret, nil)
+	ctx := context.Background()
+	go c.StreamBlocks(ctx, ret, nil)
 	for {
 		select {
+		case <-ctx.Done():
+			panic(fmt.Sprintf("ctx.Done() with err: %v", ctx.Err()))
 		case tmp := <-ret:
 			jsb, _ := json.Marshal(tmp)
 			fmt.Println(string(jsb))

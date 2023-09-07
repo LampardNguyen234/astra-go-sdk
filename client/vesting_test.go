@@ -2,17 +2,18 @@ package client
 
 import (
 	"fmt"
+	"github.com/LampardNguyen234/astra-go-sdk/common"
 	"github.com/tendermint/tendermint/libs/json"
 	"testing"
 )
 
 func TestCosmosClient_GetAvailableVestingBalance(t *testing.T) {
-	resp, err := c.GetAvailableVestingBalance(addr)
+	resp, err := c.GetAvailableVestingBalance("0x1ADcaa8b10C781653c87C9e3b6962d14c0A8Adbe")
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(resp.String())
+	fmt.Println(common.ParseAmountToDec(resp))
 }
 
 func TestCosmosClient_GetVestingBalance(t *testing.T) {
