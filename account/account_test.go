@@ -2,10 +2,23 @@ package account
 
 import (
 	"encoding/hex"
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	"github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/rand"
 	"testing"
 )
+
+func TestRandKeyInfo(t *testing.T) {
+	mnemonic, key, err := RandKeyInfo()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(mnemonic)
+	jsb, _ := json.MarshalIndent(key, "", "\t")
+	fmt.Println(string(jsb))
+}
 
 func TestNewKeyInfoFromPrivateKey(t *testing.T) {
 	emptyAccount := KeyInfo{}

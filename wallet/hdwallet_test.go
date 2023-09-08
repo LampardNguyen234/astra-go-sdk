@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"github.com/tendermint/tendermint/libs/rand"
 	"math/big"
 	"os"
 	"strings"
@@ -335,5 +336,37 @@ func TestWallet(t *testing.T) {
 
 	if len(words) != 12 {
 		t.Error("expected 12 words")
+	}
+}
+
+func TestNewWalletFromEntropy(t *testing.T) {
+	entropy := rand.Bytes(16)
+	mnemonic, err := NewMnemonicFromEntropy(entropy[:16])
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(mnemonic)
+	wallet, err := NewFromMnemonic(mnemonic)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// print the first #numAccounts accounts
+	numAccounts := 10
+	for i := 0; i < numAccounts; i++ {
+		path, err := ParseDerivationPath(DerivationPathAtIndex(i))
+		if err != nil {
+			t.Error(err)
+		}
+
+		account, err := wallet.Derive(path, false)
+		if err != nil {
+			t.Error(err)
+		}
+		privKey, err := wallet.PrivateKeyHex(account)
+		if err != nil {
+			t.Error(err)
+		}
+		fmt.Println(i, privKey, account.Address.String())
 	}
 }

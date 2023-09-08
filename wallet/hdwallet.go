@@ -205,6 +205,15 @@ func (w *Wallet) Derive(path accounts.DerivationPath, pin bool) (accounts.Accoun
 	return account, nil
 }
 
+// DeriveAtIndex parses the given index to the derivation path and calls Derive.
+func (w *Wallet) DeriveAtIndex(idx int, pin bool) (accounts.Account, error) {
+	path, err := ParseDerivationPath(DerivationPathAtIndex(idx))
+	if err != nil {
+		return accounts.Account{}, err
+	}
+	return w.Derive(path, pin)
+}
+
 // SelfDerive implements accounts.Wallet, trying to discover accounts that the
 // user used previously (based on the chain state), but ones that he/she did not
 // explicitly pin to the wallet manually. To avoid chain head monitoring, self
@@ -447,6 +456,10 @@ func (w *Wallet) SignTextWithPassphrase(account accounts.Account, passphrase str
 	}
 
 	return w.SignHashWithPassphrase(account, passphrase, accounts.TextHash(text))
+}
+
+func DerivationPathAtIndex(idx int) string {
+	return fmt.Sprintf("m/44'/60'/0'/0/%d", idx)
 }
 
 // ParseDerivationPath parses the derivation path in string format into []uint32
