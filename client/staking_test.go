@@ -8,7 +8,7 @@ import (
 )
 
 func TestStakingClient_DelegationDetail(t *testing.T) {
-	ret, err := c.DelegationDetail("0x9b38Fb07B8327eb2b84AF08dC0b705C4D90807aa")
+	ret, err := c.DelegationDetail(addr)
 	if err != nil {
 		panic(err)
 	}

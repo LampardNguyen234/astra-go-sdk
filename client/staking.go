@@ -58,6 +58,7 @@ func (c *CosmosClient) Delegation(delAddr, valAddr string) (DelegationDetail, er
 		Validator: validator.String(),
 		Delegator: delegator.String(),
 		Amount:    resp.DelegationResponse.Balance.Amount,
+		AmountDec: common.ParseAmountToDec(resp.DelegationResponse.Balance),
 	}
 
 	return ret, nil

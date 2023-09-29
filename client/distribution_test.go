@@ -7,10 +7,6 @@ import (
 	"testing"
 )
 
-var (
-	valAddr = "astravaloper1u7gf4z49v53yrxy6ggrzhxfqj46c3ap4tzku46"
-)
-
 func TestCosmosClient_AllDelegationRewards(t *testing.T) {
 	resp, err := c.AllDelegationRewards(addr)
 	if err != nil {
@@ -31,8 +27,8 @@ func TestCosmosClient_DelegationRewards(t *testing.T) {
 	fmt.Println(resp.String())
 }
 
-func TestCosmosClient_TotalRewardsOnValidator(t *testing.T) {
-	resp, err := c.TotalRewardsOnValidator(valAddr, true)
+func TestCosmosClient_ValidatorOutstandingRewards(t *testing.T) {
+	resp, err := c.ValidatorOutstandingRewards(valAddr)
 	if err != nil {
 		panic(err)
 	}
