@@ -67,7 +67,7 @@ func (p TxCreateValidatorParams) ValidatorAddress() sdk.ValAddress {
 }
 
 func (p TxCreateValidatorParams) PubKey() cryptoTypes.PubKey {
-	return nil
+	return p.MustGetPrivateKey().ConsensusKey().CosmosPubKey()
 }
 
 func (p TxCreateValidatorParams) SelfDelegation() sdk.Coin {

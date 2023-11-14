@@ -66,3 +66,42 @@ func TestCosmosClient_DelegationDetail(t *testing.T) {
 
 	fmt.Println(resp)
 }
+
+func TestCosmosClient_TxCreateValidator(t *testing.T) {
+	createParams := msg_params.TxCreateValidatorParams{
+		TxParams: msg_params.TxParams{PrivateKey: ""},
+		Description: stakingTypes.Description{
+			Moniker: "SampleVal",
+			Details: "Hello world",
+		},
+		SelfDelegationAmt:       big.NewInt(1000000000000000),
+		MinSelfDelegationAmt:    big.NewInt(1),
+		CommissionRate:          0.07,
+		MaxCommissionRate:       0.5,
+		MaxChangeCommissionRate: 0.01,
+	}
+
+	txRespond, err := c.TxCreateValidator(createParams)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(txRespond.TxHash)
+}
+
+func TestCosmosClient_TxEditValidator(t *testing.T) {
+	createParams := msg_params.TxEditValidatorParams{
+		TxParams: msg_params.TxParams{PrivateKey: ""},
+		Description: stakingTypes.Description{
+			Moniker: "SampleVal",
+			Details: "Hello world",
+		},
+		MinSelfDelegationAmt: big.NewInt(10000000000000000),
+		NewCommissionRate:    0.07,
+	}
+
+	txRespond, err := c.TxEditValidator(createParams)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(txRespond.TxHash)
+}

@@ -2,7 +2,9 @@ package account
 
 import (
 	"encoding/hex"
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	cmtjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/rand"
 	"testing"
 )
@@ -54,4 +56,33 @@ func TestNewPrivateKeyFromString(t *testing.T) {
 		}
 
 	}
+}
+
+func TestPrivateKey_ConsensusPubKey(t *testing.T) {
+	k := MustNewPrivateKeyFromString("")
+
+	tmp := k.ConsensusKey()
+	jsonBytes, err := cmtjson.MarshalIndent(tmp, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(jsonBytes))
+
+	nodeKey := k.NodeKey()
+	jsonBytes, err = cmtjson.MarshalIndent(nodeKey, "", "  ")
+	fmt.Println(string(jsonBytes))
+
+	jsonBytes, err = cmtjson.MarshalIndent(k.ConsensusKey().CosmosPubKey(), "", "  ")
+	fmt.Println(string(jsonBytes))
+	fmt.Println(k.ConsensusKey().CosmosPubKey().Type(), fmt.Sprintf("%x", k.ConsensusKey().CosmosPubKey().Bytes()))
+
+	//tmpPrvKey, err := NewConsensusKeyFromPrivateConsensusKey("hKwznM43l8BDkN9Qm9DAj/irzOITjt4u5RFSe7Wif2VjiA3lyLO/AMgy+hqi1OdIzcqhLo+XVDDbptO3iEOTDg==")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//jsonBytes, err = cmtjson.MarshalIndent(tmpPrvKey, "", "  ")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//fmt.Println(string(jsonBytes))
 }
